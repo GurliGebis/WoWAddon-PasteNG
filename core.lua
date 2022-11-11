@@ -250,7 +250,7 @@ function addon:OnInitialize()
   optionsFrame.default = function()
        for k,v in pairs(defaults.profile) do settings[k] = table_clone(v) end
        addon:RefreshConfig()
-       if InterfaceOptionsFrame:IsShown() then
+       if SettingsPanel:IsShown() then
          addon:Config(); addon:Config()
        end
   end
@@ -267,8 +267,8 @@ end
 
 function addon:Config()
   if optionsFrame then
-    if ( InterfaceOptionsFrame:IsShown() ) then
-      InterfaceOptionsFrame:Hide();
+    if ( SettingsPanel:IsShown() ) then
+      SettingsPanel:Hide();
     else
       InterfaceOptionsFrame_OpenToCategory(optionsFrame)
     end

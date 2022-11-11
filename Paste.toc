@@ -1,24 +1,22 @@
-## Interface: 70100
-## Title: Paste
+## Interface: 100002
+## Title: PasteNG
 ## Description: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Notes: Enables multi-line/unlimited-length pasting of text or commands into WoW
-## Author: oscarucb
+## Author: oscarucb,GurliGebis
+## URL: https://www.curseforge.com/wow/addons/pasteng
 ## Credits:
-## Version: 1.4.10
-## X-Build: 55
-## X-ReleaseDate: 2016-11-15T23:51:08Z
-## X-Revision: $Revision: 55 $
+## Version: @project-version@
 ## SavedVariables: PasteDB
 ## SavedVariablesPerCharacter:
+## X-Compatible-With: 100002
+## X-Curse-Packaged-Version: @project-version@
+## X-Curse-Project-Name: PasteNG
+## X-Curse-Project-ID: 714985
 ## X-Embeds: Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibStrataFix
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibDBIcon-1.0
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
 ## X-LoadOn-Slash: /paste
-## X-Curse-Packaged-Version: 1.4.10
-## X-Curse-Project-Name: Paste
-## X-Curse-Project-ID: paste
-## X-Curse-Repository-ID: wow/paste/mainline
 
 embeds.xml
 
