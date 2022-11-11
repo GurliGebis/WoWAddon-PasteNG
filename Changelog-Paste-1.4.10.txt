@@ -1,0 +1,23 @@
+------------------------------------------------------------------------
+r56 | oscarucb | 2016-11-15 23:53:58 +0000 (Tue, 15 Nov 2016) | 1 line
+Changed paths:
+   A /tags/1.4.10 (from /trunk:55)
+
+Tagging as 1.4.10
+------------------------------------------------------------------------
+r55 | oscarucb | 2016-11-15 23:51:08 +0000 (Tue, 15 Nov 2016) | 2 lines
+Changed paths:
+   M /trunk/Paste.toc
+
+toc bump
+
+------------------------------------------------------------------------
+r54 | oscarucb | 2016-09-27 02:15:55 +0000 (Tue, 27 Sep 2016) | 4 lines
+Changed paths:
+   M /trunk/core.lua
+
+revert r53. 
+
+EMOTE channel is deliberately omitted because it does not gracefully handle line-breaks.
+
+------------------------------------------------------------------------
