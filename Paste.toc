@@ -3,13 +3,13 @@
 ## Description: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Notes: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Author: oscarucb
-## Credits: 
+## Credits:
 ## Version: 1.4.10
 ## X-Build: 55
 ## X-ReleaseDate: 2016-11-15T23:51:08Z
 ## X-Revision: $Revision: 55 $
-## SavedVariables: PasteDB 
-## SavedVariablesPerCharacter: 
+## SavedVariables: PasteDB
+## SavedVariablesPerCharacter:
 ## X-Embeds: Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibStrataFix
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibDBIcon-1.0
 ## LoadManagers: AddonLoader

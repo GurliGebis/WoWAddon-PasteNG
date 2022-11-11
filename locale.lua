@@ -9,7 +9,7 @@ local locale = GAME_LOCALE or GetLocale()
 if locale == "enGB" then locale = "enUS" end
 
 vars.L = setmetatable({},{
-    __index = function(t, s) 
+    __index = function(t, s)
       if locale ~= "enUS" and Ld[s] and
          not La[s] and url and not vars.locale_warning then
         vars.locale_warning = true
@@ -17,7 +17,7 @@ vars.L = setmetatable({},{
 	print("*** If you speak English, you can contribute by visiting:")
 	print("*** "..url)
       end
-      return La[s] or Ld[s] or rawget(t,s) or s 
+      return La[s] or Ld[s] or rawget(t,s) or s
     end
 })
 

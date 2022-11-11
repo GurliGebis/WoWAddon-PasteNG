@@ -1,7 +1,7 @@
 local addonName, vars = ...
 local L = vars.L
 Paste = LibStub("AceAddon-3.0"):NewAddon(addonName)
-local addon = Paste 
+local addon = Paste
 local AceGUI = LibStub("AceGUI-3.0")
 vars.svnrev = vars.svnrev or {}
 local svnrev = vars.svnrev
@@ -39,7 +39,7 @@ local function debug(msg)
   end
 end
 
-function addon:myOptions() 
+function addon:myOptions()
 return {
   type = "group",
   set = function(info,val)
@@ -158,7 +158,7 @@ return {
      },
     },
   }
-} 
+}
 end
 
 BINDING_NAME_PASTE = L["Show/Hide the Paste window"]
@@ -207,7 +207,7 @@ function addon:Update()
       frame:ClearAllPoints()
       frame:SetScale(new)
       left = left * old / new
-      top = top * old / new 
+      top = top * old / new
       frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
     end
     local file, oldpt, flags = addon.editfont:GetFont()
@@ -278,7 +278,7 @@ end
 function addon:OnEnable()
   debug("OnEnable")
   --self:RegisterEvent("READY_CHECK")
- 
+
   if LDB then
     return
   end
@@ -308,7 +308,7 @@ function addon:OnEnable()
                 end
         end,
      })
-  end 
+  end
 
   if LDBo then
     minimapIcon:Register(addonName, LDBo, settings.minimap)
@@ -323,11 +323,11 @@ function addon:ToggleWindow(keystate)
   if not addon.gui then
     addon:CreateWindow()
   end
-  
+
   if addon.gui:IsShown() then
     addon.gui:Hide()
   else
-    addon.gui:Show()  
+    addon.gui:Show()
     addon.edit:SetFocus()
     addon:Update()
   end
@@ -363,7 +363,7 @@ function addon:CreateWindow()
   c:SetFullWidth(true)
   c:SetFullHeight(true)
   f:AddChild(c)
-  
+
   local edit = AceGUI:Create("MultiLineEditBox")
   c:AddChild(edit)
   edit:SetMaxLetters(0)
@@ -385,16 +385,16 @@ function addon:CreateWindow()
   addon.editfontnorm = select(2, addon.editfont:GetFont())
 
   -- AceGUI fails at enforcing minimum Frame resize for a container, so fix it
-  hooksecurefunc(f,"OnHeightSet", function(widget, height) 
-    if (widget ~= addon.gui) then return end 
+  hooksecurefunc(f,"OnHeightSet", function(widget, height)
+    if (widget ~= addon.gui) then return end
     if (height < addon.minheight) then
       f:SetHeight(addon.minheight)
     else
       edit:SetHeight(height - addon.minheight + 170)
     end
   end)
-  hooksecurefunc(f,"OnWidthSet", function(widget, width) 
-    if (widget ~= addon.gui) then return end 
+  hooksecurefunc(f,"OnWidthSet", function(widget, width)
+    if (widget ~= addon.gui) then return end
     if (width < addon.minwidth) then
       f:SetWidth(addon.minwidth)
     end
@@ -404,7 +404,7 @@ function addon:CreateWindow()
   edit.editBox:SetScript("OnEnterPressed", function(self)
     if settings.shiftenter and IsShiftKeyDown() then
       f:Hide()
-      addon:PasteText(edit:GetText()) 
+      addon:PasteText(edit:GetText())
     elseif oldhandler then
       oldhandler(self)
     else
@@ -435,8 +435,8 @@ function addon:CreateWindow()
   where:SetLabel(L["Paste to:"])
   where:SetWidth(200)
   where:SetCallback("OnEnter",addon.UpdateWhere)
-  where:SetCallback("OnValueChanged",function(widget, event, key) 
-     settings.where = key 
+  where:SetCallback("OnValueChanged",function(widget, event, key)
+     settings.where = key
      if key == CHAT_MSG_WHISPER_INFORM or key == BN_WHISPER then
        target:SetDisabled(false)
        target:SetFocus()
@@ -448,7 +448,7 @@ function addon:CreateWindow()
   addon.UpdateWhere()
   where:SetValue(settings.where)
   target:SetDisabled(settings.where ~= CHAT_MSG_WHISPER_INFORM and settings.where ~= BN_WHISPER)
-  w:AddChild(where)  
+  w:AddChild(where)
   w:AddChild(target)
 
   local b = AceGUI:Create("SimpleGroup")
@@ -460,30 +460,30 @@ function addon:CreateWindow()
   local pcbutton = AceGUI:Create("Button")
   pcbutton:SetText(L["Paste and Close"])
   pcbutton:SetWidth(bwidth)
-  pcbutton:SetCallback("OnClick", function(widget, button) 
+  pcbutton:SetCallback("OnClick", function(widget, button)
      f:Hide()
-     addon:PasteText(edit:GetText()) 
+     addon:PasteText(edit:GetText())
   end)
-  b:AddChild(pcbutton)  
-  
+  b:AddChild(pcbutton)
+
   local pbutton = AceGUI:Create("Button")
   pbutton:SetText(L["Paste"])
   pbutton:SetWidth(bwidth)
-  pbutton:SetCallback("OnClick", function(widget, button) 
-     addon:PasteText(edit:GetText())      
+  pbutton:SetCallback("OnClick", function(widget, button)
+     addon:PasteText(edit:GetText())
   end)
-  b:AddChild(pbutton)  
-  
+  b:AddChild(pbutton)
+
   local clear = AceGUI:Create("Button")
   clear:SetText(L["Clear"])
   clear:SetWidth(bwidth)
-  clear:SetCallback("OnClick", function(widget, button) 
+  clear:SetCallback("OnClick", function(widget, button)
      edit:SetText("")
      addon:UpdateCount()
      edit:SetFocus()
   end)
-  b:AddChild(clear)  
-  
+  b:AddChild(clear)
+
 end
 
 addon.wherefn = {
@@ -494,15 +494,15 @@ addon.wherefn = {
   [INSTANCE_CHAT] = function(str) SendChatMessage(str, "INSTANCE_CHAT") end,
   [CHAT_MSG_GUILD] = function(str) SendChatMessage(str, "GUILD") end,
   [CHAT_MSG_OFFICER] = function(str) SendChatMessage(str, "OFFICER") end,
-  [CHAT_MSG_WHISPER_INFORM] = function(str) 
+  [CHAT_MSG_WHISPER_INFORM] = function(str)
      local t = settings.whispertarget
      if not t then
        chatMsg(L["You must select a whisper target!"])
        return
      end
-     SendChatMessage(str, "WHISPER", nil, t) 
+     SendChatMessage(str, "WHISPER", nil, t)
   end,
-  [BN_WHISPER] = function(str) 
+  [BN_WHISPER] = function(str)
      local t = settings.whispertarget
      if not t then
        chatMsg(L["You must select a whisper target!"])
@@ -515,7 +515,7 @@ addon.wherefn = {
      end
      chatMsg(ERR_FRIEND_NOT_FOUND)
   end,
-  [CHAT_DEFAULT] = function(str) 
+  [CHAT_DEFAULT] = function(str)
     ChatFrame_OpenChat("")
     local edit = ChatEdit_GetActiveWindow();
     edit:SetText(str)
@@ -524,7 +524,7 @@ addon.wherefn = {
   end,
 }
 
-function addon.UpdateWhere() 
+function addon.UpdateWhere()
   addon.wherelist = addon.wherelist or {}
   wipe(addon.wherelist)
   local w = addon.wherelist
@@ -572,17 +572,17 @@ end
 function addon:normalizeText(text)
   if not text then return nil end
   text = text:gsub("\r\n","\n")
-  text = text:gsub("\r","\n")  
+  text = text:gsub("\r","\n")
   if settings.stripempty then
-    text = text:gsub("\n%s*\n","\n")  
-    text = text:gsub("^%s*\n","\n")  
-    text = text:gsub("\n%s*$","\n")  
+    text = text:gsub("\n%s*\n","\n")
+    text = text:gsub("^%s*\n","\n")
+    text = text:gsub("\n%s*$","\n")
   end
   if settings.trimwhitespace then
-    text = text:gsub("\n%s*","\n")  
-    text = text:gsub("%s*\n","\n")  
-    text = text:gsub("^%s*","")  
-    text = text:gsub("%s*$","")  
+    text = text:gsub("\n%s*","\n")
+    text = text:gsub("%s*\n","\n")
+    text = text:gsub("^%s*","")
+    text = text:gsub("%s*$","")
   end
   text = strtrim(text)
   return text
@@ -628,7 +628,7 @@ StaticPopupDialogs["PASTE_SLASHWARN"] = {
   button1 = YES,
   button2 = NO,
   button3 = CANCEL,
-  OnAccept = function() 
+  OnAccept = function()
 	settings.where = CHAT_DEFAULT
         addon.wherewidget:SetValue(CHAT_DEFAULT)
 	addon:PasteText(addon.slashwarned)
