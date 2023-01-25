@@ -240,7 +240,7 @@ end
 
 
 function addon:OnInitialize()
-  addon.db = LibStub("AceDB-3.0"):New("PasteDB", defaults)
+  addon.db = LibStub("AceDB-3.0"):New("PasteDB", defaults, true)
   addon:SetupVersion()
   addon:RefreshConfig()
   local options = addon:myOptions()
