@@ -12,7 +12,7 @@
 ## X-Curse-Packaged-Version: @project-version@
 ## X-Curse-Project-Name: PasteNG
 ## X-Curse-Project-ID: 714985
-## X-Embeds: Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibStrataFix
+## X-Embeds: Ace3, LibDataBroker-1.1, LibDBIcon-1.0
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibDBIcon-1.0
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
