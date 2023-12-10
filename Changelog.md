@@ -1,3 +1,7 @@
+# 10.2.0-20231210_1
+* Fix deprecated code.
+* More code documentation.
+
 # 10.2.0-20231111_1
 * Update libraries and remove old files.
 * Code cleanup and added changelog.

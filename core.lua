@@ -236,8 +236,8 @@ function addon:SetupVersion()
   local svnrev = 0
   local files = vars.svnrev
 
-  files["X-Build"] = tonumber((GetAddOnMetadata(addonName, "X-Build") or ""):match("%d+"))
-  files["X-Revision"] = tonumber((GetAddOnMetadata(addonName, "X-Revision") or ""):match("%d+"))
+  files["X-Build"] = tonumber((C_AddOns.GetAddOnMetadata(addonName, "X-Build") or ""):match("%d+"))
+  files["X-Revision"] = tonumber((C_AddOns.GetAddOnMetadata(addonName, "X-Revision") or ""):match("%d+"))
 
   for _, v in pairs(files) do -- determine highest file revision
     if v and v > svnrev then
@@ -247,8 +247,8 @@ function addon:SetupVersion()
 
   addon.revision = svnrev
 
-  files["X-Curse-Packaged-Version"] = GetAddOnMetadata(addonName, "X-Curse-Packaged-Version")
-  files["Version"] = GetAddOnMetadata(addonName, "Version")
+  files["X-Curse-Packaged-Version"] = C_AddOns.GetAddOnMetadata(addonName, "X-Curse-Packaged-Version")
+  files["Version"] = C_AddOns.GetAddOnMetadata(addonName, "Version")
 
   addon.version = files["X-Curse-Packaged-Version"] or files["Version"] or "@"
 
@@ -366,6 +366,7 @@ function addon:CreateWindow()
     return
   end
 
+  -- Create main window.
   local frame = AceGUI:Create("Frame")
   frame.frame:SetFrameStrata("MEDIUM")
   frame.frame:Raise()
@@ -387,12 +388,14 @@ function addon:CreateWindow()
   frame:SetAutoAdjustHeight(true)
   addon:SetEscapeHandler(frame, function() addon:ToggleWindow() end)
 
+  -- Create main group, where everything is placed.
   local mainGroup = AceGUI:Create("SimpleGroup")
   mainGroup:SetLayout("List")
   mainGroup:SetFullWidth(true)
   mainGroup:SetFullHeight(true)
   frame:AddChild(mainGroup)
 
+  -- Create text box, where the text is placed.
   local editBox = AceGUI:Create("MultiLineEditBox")
   mainGroup:AddChild(editBox)
   editBox:SetMaxLetters(0)
@@ -442,6 +445,7 @@ function addon:CreateWindow()
     end
   end)
 
+  -- Create a group for the dropdowns (target)
   local pasteToGroup = AceGUI:Create("SimpleGroup")
   pasteToGroup:SetLayout("Flow")
   pasteToGroup:SetFullWidth(true)
@@ -481,6 +485,7 @@ function addon:CreateWindow()
   pasteToGroup:AddChild(where)
   pasteToGroup:AddChild(target)
 
+  -- Create group for the buttons
   local buttonsGroup = AceGUI:Create("SimpleGroup")
   buttonsGroup:SetLayout("Flow")
   buttonsGroup:SetFullWidth(true)
