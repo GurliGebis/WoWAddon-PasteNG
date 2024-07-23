@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110000
 ## Title: PasteNG
 ## Description: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Notes: Enables multi-line/unlimited-length pasting of text or commands into WoW
@@ -8,7 +8,7 @@
 ## Version: @project-version@
 ## SavedVariables: PasteDB
 ## SavedVariablesPerCharacter:
-## X-Compatible-With: 100207
+## X-Compatible-With: 110000
 ## X-Curse-Packaged-Version: @project-version@
 ## X-Curse-Project-Name: PasteNG
 ## X-Curse-Project-ID: 714985

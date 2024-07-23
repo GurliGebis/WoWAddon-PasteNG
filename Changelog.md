@@ -1,3 +1,7 @@
+# 11.0.0-20240723-1
+* Updated Ace3 to support The War Within.
+* Updated TOC to support 11.0.0
+
 # 10.2.7-20240508_1
 * Updated TOC to 10.2.7
 
