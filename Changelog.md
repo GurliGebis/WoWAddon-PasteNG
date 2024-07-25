@@ -1,5 +1,6 @@
 # 11.0.0-20240725-1
 * Change so libraries are downloaded instead of embedded from github.
+* Fix logic to open settings dialog.
 
 # 11.0.0-20240723-1
 * Updated Ace3 to support The War Within.

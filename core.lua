@@ -295,7 +295,7 @@ function addon:Config()
     if (SettingsPanel:IsShown()) then
       SettingsPanel:Hide();
     else
-      InterfaceOptionsFrame_OpenToCategory(optionsFrame)
+      Settings.OpenToCategory(optionsFrame.name)
     end
   end
 end
