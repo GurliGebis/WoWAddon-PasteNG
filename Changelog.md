@@ -1,3 +1,6 @@
+# 11.0.0-20240725-1
+* Change so libraries are downloaded instead of embedded from github.
+
 # 11.0.0-20240723-1
 * Updated Ace3 to support The War Within.
 * Updated TOC to support 11.0.0
