@@ -1,3 +1,6 @@
+# 11.0.2-20240813-1
+* Updated TOC to 11.0.2
+
 # 11.0.0-20240725-1
 * Change so libraries are downloaded instead of embedded from github.
 * Fix logic to open settings dialog.
