@@ -6,6 +6,7 @@
 ## URL: https://www.curseforge.com/wow/addons/pasteng
 ## Credits:
 ## Version: @project-version@
+## IconTexture: 134944
 ## SavedVariables: PasteDB
 ## SavedVariablesPerCharacter:
 ## X-Compatible-With: 110002

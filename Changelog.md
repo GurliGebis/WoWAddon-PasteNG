@@ -1,3 +1,6 @@
+# 11.0.2-20240831-1
+* Added icon to the addon list.
+
 # 11.0.2-20240813-1
 * Updated TOC to 11.0.2
 
