@@ -1,3 +1,6 @@
+# 11.0.2-20240905-1
+* Fixed issue with out-of-order paste into guild chat, solution provided by tflo on github.
+
 # 11.0.2-20240831-1
 * Added icon to the addon list.
 

@@ -668,6 +668,7 @@ function addon:PasteText(text)
   end
 
   local lines = { strsplit("\n", text) }
+  local delay = 0
 
   for idx, line in ipairs(lines) do
     while line and #line > 0 do
@@ -689,7 +690,13 @@ function addon:PasteText(text)
         line = ""
       end
 
-      sendfn(curr)
+      if where ~= CHAT_MSG_GUILD then
+        sendfn(curr)
+      else
+        -- Guild chat has to use a delay for some reason.
+        delay = delay + 0.25
+        C_Timer.After(delay, function() sendfn(curr) end)
+      end
     end
   end
 end
