@@ -694,8 +694,8 @@ function addon:PasteText(text)
         sendfn(curr)
       else
         -- Guild chat has to use a delay for some reason.
-        delay = delay + 0.25
         C_Timer.After(delay, function() sendfn(curr) end)
+        delay = delay + 0.25
       end
     end
   end

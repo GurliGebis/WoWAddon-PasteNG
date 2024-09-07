@@ -1,3 +1,6 @@
+# 11.0.2-20240907-1
+* No reason to delay the first chat message.
+
 # 11.0.2-20240905-1
 * Fixed issue with out-of-order paste into guild chat, solution provided by tflo on github.
 
