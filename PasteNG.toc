@@ -1,0 +1,22 @@
+## Interface: 110002
+## Title: PasteNG
+## Description: Enables multi-line/unlimited-length pasting of text or commands into WoW
+## Version: @project-version@
+## IconTexture: 134944
+## Notes: Enables multi-line/unlimited-length pasting of text or commands into WoW
+## Author: GurliGebis
+## X-Compatible-With: 110002
+## X-Curse-Packaged-Version: @project-version@
+## X-Curse-Project-Name: PasteNG
+## X-Curse-Project-ID: 714985
+## SavedVariables: PasteNGDB
+
+# Libs
+embeds.xml
+
+# Core
+Main.lua
+
+# Modules
+Common\common.xml
+Modules\modules.xml

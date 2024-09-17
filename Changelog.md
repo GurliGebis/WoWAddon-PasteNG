@@ -1,3 +1,9 @@
+# 11.0.2-20240920-1
+* Complete rewrite and refactor.
+* Added load/save functionality.
+* Disable buttons when clicking them does not make sense.
+* Change license to GPL.
+
 # 11.0.2-20240912-1
 * Github actions fixes.
 
