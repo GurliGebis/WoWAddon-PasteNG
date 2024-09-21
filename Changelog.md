@@ -1,3 +1,9 @@
+# 11.0.2-20240921-2
+* Don't hardcode Accept and Cancel.
+* Persist window size across logins.
+* Add config button to reset window size and position.
+* Warn if a paste is about to be overwritten.
+
 # 11.0.2-20240921-1
 * Fix minimap icon disable/enable.
 * Fix the "Please enter the name of your paste" string.

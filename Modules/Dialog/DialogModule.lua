@@ -397,9 +397,12 @@ do
             -- Persist the window position in the config, so it is remembered between sessions.
             mainFrame:SetStatusTable(DBModule.AceDB.profile.mainFramePosition)
 
-            -- Set window size
-            mainFrame:SetWidth(minimumFrameWidth)
-            mainFrame:SetHeight(minimumFrameHeight)
+            -- Set window size if width and height isn't stored, we default to the minimums.
+            if not DBModule.AceDB.profile.mainFramePosition.width or not DBModule.AceDB.profile.mainFramePosition.height then
+                mainFrame:SetWidth(minimumFrameWidth)
+                mainFrame:SetHeight(minimumFrameHeight)
+            end
+
             mainFrame.frame:SetResizeBounds(minimumFrameWidth, minimumFrameHeight)
 
             -- Store the frame on the module.
@@ -539,6 +542,25 @@ do
         DialogModule.PasteDialog:Show()
         DialogModule.TextBox:SetFocus()
     end
+
+    function DialogModule:ResetCoordinates()
+        if DialogModule.PasteDialog then
+            -- Close the dialog first, if it is open.
+            DialogModule.PasteDialog:Hide()
+
+            -- Release the frame.
+            AceGUI:Release(DialogModule.PasteDialog)
+        end
+
+        -- Reset the saved data.
+        DBModule.AceDB.profile.mainFramePosition = {}
+
+        -- Clear the stored frame, to force recreation on next open.
+        DialogModule.PasteDialog = nil
+
+        -- Show message box.
+        StaticPopup_Show("PASTENG_POSITION_RESET")
+    end
 end
 
 function DialogModule:OnInitialize()
@@ -570,6 +592,11 @@ function DialogModule:HandleChatCommand(message)
     end
 end
 
+local function DoPasteSave(name, data)
+    DBModule:SavePaste(name, data)
+    DialogModule:RefreshLoadDeleteButtons()
+end
+
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     text = "",
     button1 = "Yes",
@@ -586,12 +613,31 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
 
 StaticPopupDialogs["PASTENG_SAVE"] = {
     text = L["Please enter the name of your paste:"],
-    button1 = "Accept",
-    button2 = "Cancel",
+    button1 = ACCEPT,
+    button2 = CANCEL,
     hasEditBox = true,
     OnAccept = function(self, data)
-        DBModule:SavePaste(self.editBox:GetText(), data)
-        DialogModule:RefreshLoadDeleteButtons()
+        local pasteName = self.editBox:GetText()
+
+        if DBModule:DoesPasteExist(pasteName) then
+            StaticPopup_Hide("PASTENG_SAVE")
+            StaticPopup_Show("PASTENG_WARN_OVERWRITE", nil, nil, { pasteName, data })
+        else
+            DoPasteSave(pasteName, data)
+        end
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_WARN_OVERWRITE"] = {
+    text = L["This will overwrite an existing saved paste, are you sure?"],
+    button1 = ACCEPT,
+    button2 = CANCEL,
+    OnAccept = function(self, data)
+        DoPasteSave(data[1], data[2])
     end,
     timeout = 0,
     whileDead = true,
@@ -610,6 +656,15 @@ StaticPopupDialogs["PASTENG_WARN_ABOUT_PASTE"] = {
 
 StaticPopupDialogs["PASTENG_BATTLE_NET_FRIEND_NOT_FOUND"] = {
     text = L["Battle.net friend not found."],
+    button1 = "OK",
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_POSITION_RESET"] = {
+    text = L["Window size and position has been reset."],
     button1 = "OK",
     timeout = 0,
     whileDead = true,

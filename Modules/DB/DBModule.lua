@@ -70,6 +70,12 @@ do
         return #list > 0
     end
 
+    function DBModule:DoesPasteExist(name)
+        local profile = self:GetProfile()
+
+        return profile.savedPastes[name] ~= nil
+    end
+
     function DBModule:ListSavedPastes()
         local profile = self:GetProfile()
         local result = {}
