@@ -397,9 +397,12 @@ do
             -- Persist the window position in the config, so it is remembered between sessions.
             mainFrame:SetStatusTable(DBModule.AceDB.profile.mainFramePosition)
 
-            -- Set window size
-            mainFrame:SetWidth(minimumFrameWidth)
-            mainFrame:SetHeight(minimumFrameHeight)
+            -- Set window size if width and height isn't stored, we default to the minimums.
+            if not DBModule.AceDB.profile.mainFramePosition.width or not DBModule.AceDB.profile.mainFramePosition.height then
+                mainFrame:SetWidth(minimumFrameWidth)
+                mainFrame:SetHeight(minimumFrameHeight)
+            end
+
             mainFrame.frame:SetResizeBounds(minimumFrameWidth, minimumFrameHeight)
 
             -- Store the frame on the module.
