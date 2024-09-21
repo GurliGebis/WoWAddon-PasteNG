@@ -586,8 +586,8 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
 
 StaticPopupDialogs["PASTENG_SAVE"] = {
     text = L["Please enter the name of your paste:"],
-    button1 = "Accept",
-    button2 = "Cancel",
+    button1 = ACCEPT,
+    button2 = CANCEL,
     hasEditBox = true,
     OnAccept = function(self, data)
         DBModule:SavePaste(self.editBox:GetText(), data)

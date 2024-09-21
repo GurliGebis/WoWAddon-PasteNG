@@ -1,3 +1,6 @@
+# 11.0.2-20240921-2
+* Don't hardcode Accept and Cancel.
+
 # 11.0.2-20240921-1
 * Fix minimap icon disable/enable.
 * Fix the "Please enter the name of your paste" string.
