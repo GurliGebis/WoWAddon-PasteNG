@@ -592,6 +592,11 @@ function DialogModule:HandleChatCommand(message)
     end
 end
 
+local function DoPasteSave(name, data)
+    DBModule:SavePaste(name, data)
+    DialogModule:RefreshLoadDeleteButtons()
+end
+
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     text = "",
     button1 = "Yes",
@@ -612,8 +617,27 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
     button2 = CANCEL,
     hasEditBox = true,
     OnAccept = function(self, data)
-        DBModule:SavePaste(self.editBox:GetText(), data)
-        DialogModule:RefreshLoadDeleteButtons()
+        local pasteName = self.editBox:GetText()
+
+        if DBModule:DoesPasteExist(pasteName) then
+            StaticPopup_Hide("PASTENG_SAVE")
+            StaticPopup_Show("PASTENG_WARN_OVERWRITE", nil, nil, { pasteName, data })
+        else
+            DoPasteSave(pasteName, data)
+        end
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_WARN_OVERWRITE"] = {
+    text = L["This will overwrite an existing saved paste, are you sure?"],
+    button1 = ACCEPT,
+    button2 = CANCEL,
+    OnAccept = function(self, data)
+        DoPasteSave(data[1], data[2])
     end,
     timeout = 0,
     whileDead = true,
