@@ -39,7 +39,7 @@ do
             self:CreateMinimapIcon()
         end
 
-        MinimapIcon:Show("PasteNG")
+        MinimapIcon:Show(addonName)
     end
 
     function MinimapModule:HideIcon()
@@ -47,7 +47,7 @@ do
             return
         end
 
-        MinimapIcon:Hide("PasteNG")
+        MinimapIcon:Hide(addonName)
     end
 
     function MinimapModule:ToggleMinimapIcon()
@@ -72,7 +72,7 @@ do
             return
         end
 
-        local minimapButton = LibDataBroker:NewDataObject("PNGBtn", {
+        local minimapButton = LibDataBroker:NewDataObject(addonName, {
             type = "launcher",
             text = "PasteNG",
             icon = "Interface\\Icons\\inv_scroll_08",
@@ -97,7 +97,7 @@ do
 
         if MinimapIcon then
             DBModule.AceDB.global.minimap = DBModule.AceDB.global.minimap or {}
-            MinimapIcon:Register("PasteNG", minimapButton, DBModule.AceDB.global.minimap)
+            MinimapIcon:Register(addonName, minimapButton, DBModule.AceDB.global.minimap)
         end
     end
 end

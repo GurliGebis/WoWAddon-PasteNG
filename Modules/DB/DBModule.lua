@@ -56,7 +56,11 @@ do
         if value == defaultOptions.profile[key] then
             self:GetProfile()[key] = nil
         else
-            self:GetProfile()[key] = value
+            if value == nil then
+                self:GetProfile()[key] = "false"
+            else
+                self:GetProfile()[key] = tostring(value)
+            end
         end
     end
 
