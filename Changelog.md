@@ -1,3 +1,8 @@
+# 11.0.2-20240921-1
+* Fix minimap icon disable/enable.
+* Fix the "Please enter the name of your paste" string.
+* Added frFR locale, since it has been translated.
+
 # 11.0.2-20240920-1
 * Complete rewrite and refactor.
 * Added load/save functionality.
