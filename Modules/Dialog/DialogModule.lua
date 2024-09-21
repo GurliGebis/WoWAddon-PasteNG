@@ -585,7 +585,7 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
 }
 
 StaticPopupDialogs["PASTENG_SAVE"] = {
-    text = L["Please enter the of your paste:"],
+    text = L["Please enter the name of your paste:"],
     button1 = "Accept",
     button2 = "Cancel",
     hasEditBox = true,
