@@ -542,6 +542,25 @@ do
         DialogModule.PasteDialog:Show()
         DialogModule.TextBox:SetFocus()
     end
+
+    function DialogModule:ResetCoordinates()
+        if DialogModule.PasteDialog then
+            -- Close the dialog first, if it is open.
+            DialogModule.PasteDialog:Hide()
+
+            -- Release the frame.
+            AceGUI:Release(DialogModule.PasteDialog)
+        end
+
+        -- Reset the saved data.
+        DBModule.AceDB.profile.mainFramePosition = {}
+
+        -- Clear the stored frame, to force recreation on next open.
+        DialogModule.PasteDialog = nil
+
+        -- Show message box.
+        StaticPopup_Show("PASTENG_POSITION_RESET")
+    end
 end
 
 function DialogModule:OnInitialize()
@@ -613,6 +632,15 @@ StaticPopupDialogs["PASTENG_WARN_ABOUT_PASTE"] = {
 
 StaticPopupDialogs["PASTENG_BATTLE_NET_FRIEND_NOT_FOUND"] = {
     text = L["Battle.net friend not found."],
+    button1 = "OK",
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_POSITION_RESET"] = {
+    text = L["Window size and position has been reset."],
     button1 = "OK",
     timeout = 0,
     whileDead = true,

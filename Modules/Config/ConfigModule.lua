@@ -65,6 +65,22 @@ local options = {
             set = function(_, val)
                 DBModule:SetValue("shift_enter_send", val)
             end
+        },
+        positionsHeader = {
+            order = 5,
+            name = L["Positions and coordinates"],
+            type = "header"
+        },
+        resetCoordinates = {
+            order = 6,
+            type = "execute",
+            width = "double",
+            name = L["Reset window size and position"],
+            desc = L["Resets the window size and position on screen to the default"],
+            func = function()
+                local DialogModule = PasteNG:GetModule("DialogModule")
+                DialogModule:ResetCoordinates()
+            end
         }
     }
 }
