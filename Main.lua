@@ -21,3 +21,13 @@ PasteNG = LibStub("AceAddon-3.0"):NewAddon(addonName)
 
 PasteNG.Name = C_AddOns.GetAddOnMetadata(addonName, "Title")
 PasteNG.Version = C_AddOns.GetAddOnMetadata(addonName, "Version")
+
+-- Called from keybinding.
+function PasteNG:ShowDialog(keyState)
+    -- We need to be sure that we catch the key up event.
+    -- If we catch the key down event, and people is holding down the keys, the dialog will recieve the inputs.
+    if keyState == "up" then
+        local DialogModule = PasteNG:GetModule("DialogModule")
+        DialogModule:ShowDialog()
+    end
+end

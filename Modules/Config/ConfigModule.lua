@@ -26,6 +26,40 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
+_G.BINDING_HEADER_PASTENG = "PasteNG"
+_G.BINDING_NAME_PASTENG_OPEN = L["Open the PasteNG window"]
+
+local keyBindingName_PasteNG_Open = "PASTENG_OPEN"
+
+local function SetKeybinding(bindingName, binding)
+    -- Get existing bindings for the key binding.
+    local binding1, binding2 = GetBindingKey(bindingName)
+
+    -- Remove the existing binding.
+    if binding1 then
+        -- Remove the existing primary binding.
+        SetBinding(binding1)
+    end
+    if binding2 then
+        -- Remove the existing secondary binding.
+        SetBinding(binding2)
+    end
+
+    -- If ESC was pressed to clear the binding, binding is empty.
+    -- In that case, we shouldn't call SetBinding for it.
+    -- If we call SetBinding with an empty key, it creates an "empty" binding, which is wrong.
+    if binding ~= "" then
+        -- Set the new key binding.
+        SetBinding(binding, bindingName)
+    end
+
+    -- Get the current key binding set.
+    local currentKeyBindingSet = GetCurrentBindingSet()
+
+    -- Save the key binding to the current key binding set.
+    SaveBindings(currentKeyBindingSet)
+end
+
 local options = {
     name = "PasteNG",
     handler = ConfigModule,
@@ -80,6 +114,24 @@ local options = {
             func = function()
                 local DialogModule = PasteNG:GetModule("DialogModule")
                 DialogModule:ResetCoordinates()
+            end
+        },
+        keyBindings = {
+            order = 7,
+            name = KEY_BINDINGS,
+            type = "header"
+        },
+        showWindowKeyBinding = {
+            order = 8,
+            type = "keybinding",
+            width = "double",
+            name = L["Open the PasteNG window"],
+            desc = L["Create a key binding to open the PasteNG window"],
+            get = function()
+                return GetBindingKey(keyBindingName_PasteNG_Open)
+            end,
+            set = function(_, val)
+                SetKeybinding(keyBindingName_PasteNG_Open, val)
             end
         }
     }
