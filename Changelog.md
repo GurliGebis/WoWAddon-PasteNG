@@ -1,3 +1,6 @@
+# 11.0.2-20240922-1
+* Added key binding support for opening the PasteNG window.
+
 # 11.0.2-20240921-2
 * Don't hardcode Accept and Cancel.
 * Persist window size across logins.
