@@ -27,51 +27,36 @@ do
     local MinimapIcon = nil
 
     function MinimapModule:OnInitialize()
-        if DBModule:GetValue("enableMinimapIcon") then
-            MinimapModule:CreateMinimapIcon()
-        end
+        -- Create the minimap icon.
+        MinimapModule:CreateMinimapIcon()
 
+        -- Refresh it's status.
         MinimapModule:RefreshMinimapIcon()
     end
 
-    function MinimapModule:ShowIcon()
-        if MinimapIcon == nil then
-            self:CreateMinimapIcon()
-        end
-
-        MinimapIcon:Show(addonName)
-    end
-
-    function MinimapModule:HideIcon()
-        if MinimapIcon == nil then
-            return
-        end
-
-        MinimapIcon:Hide(addonName)
-    end
-
     function MinimapModule:ToggleMinimapIcon()
-        DBModule:SetValue("enableMinimapIcon", not DBModule:GetValue("enableMinimapIcon"))
+        -- Invert the hide status.
+        DBModule.AceDB.profile.minimapIcon.hide = not DBModule.AceDB.profile.minimapIcon.hide
 
+        -- Refresh the minimap icon.
         MinimapModule:RefreshMinimapIcon()
     end
 
     function MinimapModule:RefreshMinimapIcon()
-        if DBModule:GetValue("enableMinimapIcon") then
-            MinimapModule:ShowIcon()
-        else
-            MinimapModule:HideIcon()
-        end
+        -- Refresh the minimap icon.
+        MinimapIcon:Refresh(addonName)
     end
 
     function MinimapModule:CreateMinimapIcon()
         local LibDataBroker = LibStub("LibDataBroker-1.1", true)
         MinimapIcon = LibDataBroker and LibStub("LibDBIcon-1.0", true)
 
+        -- If LibDataBroker is not available, we cannot create the minimap button.
         if LibDataBroker == nil then
             return
         end
 
+        -- Create the minimap button / data broker object.
         local minimapButton = LibDataBroker:NewDataObject(addonName, {
             type = "launcher",
             text = "PasteNG",
@@ -95,9 +80,9 @@ do
             OnLeave = HideTooltip
         })
 
+        -- Register the minimap button / data broker object.
         if MinimapIcon then
-            DBModule.AceDB.global.minimap = DBModule.AceDB.global.minimap or {}
-            MinimapIcon:Register(addonName, minimapButton, DBModule.AceDB.global.minimap)
+            MinimapIcon:Register(addonName, minimapButton, DBModule.AceDB.profile.minimapIcon)
         end
     end
 end

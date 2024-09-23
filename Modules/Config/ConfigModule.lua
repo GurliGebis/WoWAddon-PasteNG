@@ -81,10 +81,10 @@ local options = {
             name = L["Enable Minimap Icon"],
             desc = L["Toggle the minimap icon"],
             get = function()
-                return DBModule:GetValue("enableMinimapIcon")
+                return not DBModule.AceDB.profile.minimapIcon.hide
             end,
             set = function(_, val)
-                DBModule:SetValue("enableMinimapIcon", val)
+                DBModule.AceDB.profile.minimapIcon.hide = not val
                 MinimapModule:RefreshMinimapIcon()
             end
         },
