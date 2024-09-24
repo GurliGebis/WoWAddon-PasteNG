@@ -22,8 +22,10 @@ local DBModule = PasteNG:NewModule("DBModule")
 
 local defaultOptions = {
     profile =  {
-        enableMinimapIcon = "true",
         mainFramePosition = {},
+        minimapIcon = {
+            hide = false
+        },
         savedPastes = {},
         selected_target = CHAT_DEFAULT,
         selected_target_name = "",
@@ -34,6 +36,8 @@ local defaultOptions = {
 do
     function DBModule:OnInitialize()
         self.AceDB = LibStub("AceDB-3.0"):New("PasteNGDB", defaultOptions, true)
+
+        self:MigrateProfile()
     end
 
     function DBModule:GetProfile()
@@ -107,5 +111,35 @@ do
 
     function DBModule:DeletePaste(name)
         self:GetProfile()["savedPastes"][name] = nil
+    end
+end
+
+do
+    local function GetDataVersion(profile)
+        return profile.dataVersion or 0
+    end
+
+    local function MigrateMinimapIcon(profile)
+        -- Make sure minimapIcon isn't nil
+        profile.minimapIcon = profile.minimapIcon or {}
+
+        -- Migrate the old minimap icon setting
+        profile.minimapIcon.hide = profile.enableMinimapIcon == "false"
+
+        -- Remove the old setting
+        profile.enableMinimapIcon = nil
+
+        -- Update the data version
+        profile.dataVersion = 1
+        return GetDataVersion(profile)
+    end
+
+    function DBModule:MigrateProfile()
+        local profile = self:GetProfile()
+        local version = GetDataVersion(profile)
+
+        if version < 1 then
+            version = MigrateMinimapIcon(profile)
+        end
     end
 end

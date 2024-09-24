@@ -1,3 +1,6 @@
+# 11.0.2-20240924-1
+* Fixed support for data brokers.
+
 # 11.0.2-20240922-1
 * Added key binding support for opening the PasteNG window.
 
