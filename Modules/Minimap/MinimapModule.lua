@@ -47,6 +47,24 @@ do
         MinimapIcon:Refresh(addonName)
     end
 
+    function MinimapModule:CreateTooltip(tooltip)
+        tooltip:AddLine("PasteNG")
+        tooltip:AddLine("|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"])
+        tooltip:AddLine("|cffffff00" .. L["Right Click"] .. "|r " .. L["to open options"])
+    end
+    
+    function MinimapModule:ButtonClicked(button)
+        if button == "LeftButton" then
+            -- Show the PasteNG dialog
+            local DialogModule = PasteNG:GetModule("DialogModule")
+            DialogModule:ShowDialog()
+        else
+            -- Show config dialog
+            local ConfigModule = PasteNG:GetModule("ConfigModule")
+            Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
+        end
+    end
+
     function MinimapModule:CreateMinimapIcon()
         local LibDataBroker = LibStub("LibDataBroker-1.1", true)
         MinimapIcon = LibDataBroker and LibStub("LibDBIcon-1.0", true)
@@ -62,20 +80,10 @@ do
             text = "PasteNG",
             icon = "Interface\\Icons\\inv_scroll_08",
             OnClick = function(_, button)
-                if button == "LeftButton" then
-                    -- Show the PasteNG dialog
-                    local DialogModule = PasteNG:GetModule("DialogModule")
-                    DialogModule:ShowDialog()
-                else
-                    -- Show config dialog
-                    local ConfigModule = PasteNG:GetModule("ConfigModule")
-                    Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
-                end
+                MinimapModule:ButtonClicked(button)
             end,
             OnTooltipShow = function(tooltip)
-                tooltip:AddLine("PasteNG")
-                tooltip:AddLine("|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"])
-                tooltip:AddLine("|cffffff00" .. L["Right Click"] .. "|r " .. L["to open options"])
+                MinimapModule:CreateTooltip(tooltip)
             end,
             OnLeave = HideTooltip
         })
