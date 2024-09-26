@@ -2,6 +2,7 @@
     <Include file="Locale\LocaleModule.xml" />
     <Include file="DB\DBModule.xml" />
     <Include file="Minimap\MinimapModule.xml" />
+    <Include file="AddonCompartment\AddonCompartmentModule.xml" />
     <Include file="Config\ConfigModule.xml" />
     <Include file="Dialog\DialogModule.xml" />
 </Ui>
