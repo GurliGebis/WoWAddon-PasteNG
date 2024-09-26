@@ -5,6 +5,9 @@
 ## IconTexture: 134944
 ## Notes: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Author: GurliGebis
+## AddonCompartmentFunc: PasteNG_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: PasteNG_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: PasteNG_OnAddonCompartmentLeave
 ## X-Compatible-With: 110002
 ## X-Curse-Packaged-Version: @project-version@
 ## X-Curse-Project-Name: PasteNG

@@ -1,3 +1,6 @@
+# 11.0.2-20240926-1
+* Added support for the addon compartment.
+
 # 11.0.2-20240924-1
 * Fixed support for data brokers.
 
