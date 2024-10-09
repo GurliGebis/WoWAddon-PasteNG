@@ -626,6 +626,19 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
             DoPasteSave(pasteName, data)
         end
     end,
+    EditBoxOnEnterPressed = function(self)
+        getglobal(self:GetParent():GetName() .. "Button1"):Click()
+    end,
+	EditBoxOnTextChanged = function(self)
+		local editBox = getglobal(self:GetParent():GetName() .. "EditBox");
+		local text = editBox:GetText()
+
+        if #text > 0 then
+            getglobal(self:GetParent():GetName() .. "Button1"):Enable();
+        else
+            getglobal(self:GetParent():GetName() .. "Button1"):Disable();
+        end
+	end,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
