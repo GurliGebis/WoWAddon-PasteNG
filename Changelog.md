@@ -1,5 +1,6 @@
 # 11.0.2-20241009-1
 * Enable/Disable the Accept button in the save dialog, depending on text length.
+* Submit the save dialog when the Enter key is pressed.
 
 # 11.0.2-20240926-1
 * Added support for the addon compartment.
