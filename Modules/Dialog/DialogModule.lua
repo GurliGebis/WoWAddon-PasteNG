@@ -652,6 +652,7 @@ StaticPopupDialogs["PASTENG_WARN_OVERWRITE"] = {
     OnAccept = function(self, data)
         DoPasteSave(data[1], data[2])
     end,
+    enterClicksFirstButton = true,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
