@@ -1,3 +1,6 @@
+# 11.0.2-20241017-1
+* Submit the delete dialog when the Enter key is pressed.
+
 # 11.0.2-20241015-1
 * Submit the overwrite dialog when the Enter key is pressed.
 * Added installation of missing github runner packages.
