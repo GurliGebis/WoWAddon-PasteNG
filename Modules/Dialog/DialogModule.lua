@@ -605,6 +605,7 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
         DBModule:DeletePaste(data)
         DialogModule:RefreshLoadDeleteButtons()
     end,
+    enterClicksFirstButton = true,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
