@@ -1,3 +1,6 @@
+# 11.0.5-20241023-1
+* Updated TOC to 11.0.5
+
 # 11.0.2-20241017-1
 * Submit the delete dialog when the Enter key is pressed.
 
