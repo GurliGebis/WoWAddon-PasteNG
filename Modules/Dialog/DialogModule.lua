@@ -178,7 +178,7 @@ do
         SetButtonStatus(true)
     end
 
-    local function SendPaste()
+    function DialogModule:SendPaste()
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
             if chatType == CHAT_DEFAULT then
@@ -324,11 +324,11 @@ do
 
     local function PasteCloseButton_OnClick()
         DialogModule.PasteDialog:Hide()
-        SendPaste()
+        DialogModule:SendPaste()
     end
 
     local function PasteButton_OnClick()
-        SendPaste()
+        DialogModule:SendPaste()
     end
 
     local function TextBox_OnTextChanged()
@@ -343,7 +343,7 @@ do
         -- We need to make sure the paste buttons are enabled as well.
         -- Otherwise, we might try and paste when it is not possible.
         if shiftEnterSend and IsShiftKeyDown() and isPastedAllowed then
-            SendPaste()
+            DialogModule:SendPaste()
             DialogModule.PasteDialog:Hide()
         else
             DialogModule.TextBox.editBox:Insert("\n")
@@ -581,11 +581,15 @@ function PrintUsage()
 end
 
 function DialogModule:HandleChatCommand(message)
-    if message == "show" then
+    local parameters = SplitString(message)
+
+    local method = parameters[1]
+
+    if method == "show" then
         self:ShowDialog()
-    elseif message == "config" then
+    elseif method == "config" then
         Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
-    elseif message == "minimap" then
+    elseif method == "minimap" then
         MinimapModule:ToggleMinimapIcon()
     else
         PrintUsage()
