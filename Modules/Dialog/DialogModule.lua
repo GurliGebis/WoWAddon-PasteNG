@@ -178,7 +178,7 @@ do
         SetButtonStatus(true)
     end
 
-    function DialogModule:SendPaste()
+    function DialogModule:SendPaste(text, target)
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
             if chatType == CHAT_DEFAULT then
@@ -238,14 +238,14 @@ do
         end
 
         local targets = RefreshTargetDropdown()
-        local selectedTarget = DBModule:GetValue("selected_target")
+        local selectedTarget = target or DBModule:GetValue("selected_target")
 
         if not targets[selectedTarget] then
             return
         end
 
         -- Clean up the text, removing whitespaces and empty lines.
-        local message = CleanupText(DialogModule.TextBox:GetText())
+        local message = CleanupText(text or DialogModule.TextBox:GetText())
 
         -- Split the message into lines.
         local lines = { strsplit("\n", message) }
@@ -578,6 +578,33 @@ function PrintUsage()
     print(L["/pasteng show - Show the pasteng dialog"])
     print(L["/pasteng config - Open the configuration"])
     print(L["/pasteng minimap - Toggle the minimap icon"])
+    print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
+    print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
+end
+
+local function SplitString(input)
+    local spat, epat = [=[^(['"])]=], [=[(['"])$]=]
+    local buf, quoted
+    local result = {}
+
+    for str in input:gmatch("%S+") do
+      local squoted = str:match(spat)
+      local equoted = str:match(epat)
+      local escaped = str:match([=[(\*)['"]$]=])
+      if squoted and not quoted and not equoted then
+        buf, quoted = str, squoted
+      elseif buf and equoted == quoted and #escaped % 2 == 0 then
+        str, buf, quoted = buf .. ' ' .. str, nil, nil
+      elseif buf then
+        buf = buf .. ' ' .. str
+      end
+
+      if not buf then
+        tinsert(result, (str:gsub(spat,""):gsub(epat,"")))
+      end
+    end
+
+    return result
 end
 
 function DialogModule:HandleChatCommand(message)
@@ -591,6 +618,26 @@ function DialogModule:HandleChatCommand(message)
         Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
     elseif method == "minimap" then
         MinimapModule:ToggleMinimapIcon()
+    elseif method == "send" then
+        if #parameters < 2 or #parameters > 3 then
+            PrintUsage()
+            return
+        end
+
+        local text = DBModule:LoadPaste(parameters[2])
+        local channel = parameters[3] or CHAT_DEFAULT
+
+        if not text then
+            print(L["Saved paste not found"])
+            return
+        end
+
+        if channel == BN_WHISPER or channel == CHAT_MSG_WHISPER_INFORM then
+            print(L["You cannot send using whisper this way - please use the dialog instead"])
+            return
+        end
+
+        self:SendPaste(text, channel)
     else
         PrintUsage()
     end
