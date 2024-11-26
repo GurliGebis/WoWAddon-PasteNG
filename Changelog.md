@@ -1,3 +1,6 @@
+# 11.0.5-20241126-1
+* Fixed bug when sending paste before having opened the main PasteNG window.
+
 # 11.0.5-20241121-1
 * Small refactoring of DialogModule.
 * Added option to send a paste from the chat window.
