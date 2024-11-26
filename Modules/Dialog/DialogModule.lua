@@ -373,7 +373,7 @@ do
         DialogModule:RefreshPasteCloseButtons()
     end
 
-    local function CreateDialog()
+    function DialogModule:CreateDialog()
         local rightButtonsWidth = 100
         local bottomButtonWidth = 176
         local textBoxRightMargin = rightButtonsWidth + 50
@@ -536,7 +536,7 @@ do
 
     function DialogModule:ShowDialog()
         if DialogModule.PasteDialog == nil then
-            CreateDialog()
+            self:CreateDialog()
         end
 
         DialogModule.PasteDialog:Show()
@@ -569,6 +569,8 @@ function DialogModule:OnInitialize()
     else
         StaticPopup_Show("PASTENG_WARN_ABOUT_PASTE")
     end
+
+    self:CreateDialog()
 
     DialogModule:RegisterChatCommand("pasteng", "HandleChatCommand")
 end
