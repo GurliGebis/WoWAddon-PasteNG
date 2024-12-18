@@ -1,3 +1,6 @@
+## 11.0.7-20241218-1
+* Updated TOC to match WoW 11.0.7
+
 # 11.0.5-20241126-1
 * Fixed bug when sending paste before having opened the main PasteNG window.
 
