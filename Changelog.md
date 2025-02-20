@@ -1,3 +1,6 @@
+## 11.0.7-20250220-1
+* Updated TOC to support Cataclysm Classic.
+
 ## 11.0.7-20250128-1
 * Added category to TOC file.
 
