@@ -1,3 +1,6 @@
+## 11.1.0-20250305-1
+* Updated Classic TOC version to latest version.
+
 ## 11.1.0-20250225-1
 * Updated TOC to match WoW 11.1.0
 
