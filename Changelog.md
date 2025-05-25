@@ -1,3 +1,6 @@
+## 11.1.5-20250525-1
+* Updated TOC to support Classic, MoP Beta and Retail PTR.
+
 ## 11.1.5-20250422-1
 * Updated TOC to match WoW 11.1.5
 
