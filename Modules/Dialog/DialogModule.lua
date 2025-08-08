@@ -671,7 +671,7 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
     button2 = CANCEL,
     hasEditBox = true,
     OnAccept = function(self, data)
-        local pasteName = self.editBox:GetText()
+        local pasteName = self.EditBox:GetText()
 
         if DBModule:DoesPasteExist(pasteName) then
             StaticPopup_Hide("PASTENG_SAVE")

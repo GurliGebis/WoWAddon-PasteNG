@@ -1,3 +1,6 @@
+## 11.2.0-20250808-1
+* Fixed issue with saving pastes.
+
 ## 11.2.0-20250806-1
 * Updated TOC to match WoW 11.2.0
 
