@@ -1,3 +1,6 @@
+## 11.2.0-20250810-1
+* Fixed problem caused by previous fix in MoP Classic.
+
 ## 11.2.0-20250808-1
 * Fixed issue with saving pastes.
 

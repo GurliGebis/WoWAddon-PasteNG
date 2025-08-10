@@ -671,7 +671,13 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
     button2 = CANCEL,
     hasEditBox = true,
     OnAccept = function(self, data)
-        local pasteName = self.EditBox:GetText()
+        local pasteName
+
+        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+            pasteName = self.EditBox:GetText()
+        else
+            pasteName = self.editBox:GetText()
+        end
 
         if DBModule:DoesPasteExist(pasteName) then
             StaticPopup_Hide("PASTENG_SAVE")
