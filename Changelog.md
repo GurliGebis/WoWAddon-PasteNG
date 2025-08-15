@@ -1,3 +1,6 @@
+## 11.2.0-20250815-1
+* Enable scrolling for the Load and Delete dropdown menues.
+
 ## 11.2.0-20250810-1
 * Fixed problem caused by previous fix in MoP Classic.
 

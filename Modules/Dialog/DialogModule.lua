@@ -274,6 +274,15 @@ do
         end
     end
 
+    local function EnableMenuScrolling(rootDescription)
+        -- Enable scrolling for the menu, so it doesn't overflow the screen.
+
+        local extent = 20;
+        local maxCharacters = 16;
+        local maxScrollExtent = extent * maxCharacters;
+        rootDescription:SetScrollMode(maxScrollExtent);
+    end
+
     local function LoadButton_OnClick()
         local function LoadPaste(name)
             local text = DBModule:LoadPaste(name)
@@ -286,6 +295,8 @@ do
 
         MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
             rootDescription:CreateTitle(L["Select paste to load"])
+
+            EnableMenuScrolling(rootDescription)
 
             for _, savedPaste in ipairs(DBModule:ListSavedPastes()) do
                 rootDescription:CreateButton(savedPaste, function()
@@ -304,6 +315,8 @@ do
     local function DeleteButton_OnClick()
         MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
             rootDescription:CreateTitle(L["Select paste to delete"])
+
+            EnableMenuScrolling(rootDescription)
 
             for _, savedPaste in ipairs(DBModule:ListSavedPastes()) do
                 rootDescription:CreateButton(savedPaste, function()
