@@ -207,7 +207,11 @@ do
 
                 BNSendWhisper(bnetAccountID, message)
             else
-                SendChatMessage(message, chatType, nil, target)
+                if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+                    C_ChatInfo.SendChatMessage(message, chatType, nil, target)
+                else
+                    SendChatMessage(message, chatType, nil, target)
+                end
             end
         end
 

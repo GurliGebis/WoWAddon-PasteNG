@@ -1,3 +1,6 @@
+## 11.2.0-20250825-1
+* Changed SendChatMessage to be C_ChatInfo.SendChatMessage on Retail.
+
 ## 11.2.0-20250815-1
 * Enable scrolling for the Load and Delete dropdown menues.
 
