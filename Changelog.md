@@ -1,3 +1,6 @@
+## 11.2.0-20250827-1
+* Only have the Clear button enabled, if something can be cleared.
+
 ## 11.2.0-20250825-1
 * Changed SendChatMessage to be C_ChatInfo.SendChatMessage on Retail.
 

@@ -72,8 +72,10 @@ do
         if charCount > 0 then
             lineCount = lineCount + 1
             DialogModule.SaveButton:Enable()
+            DialogModule.ClearButton:Enable()
         else
             DialogModule.SaveButton:Disable()
+            DialogModule.ClearButton:Disable()
         end
 
         -- Set the footer status text.
@@ -507,6 +509,7 @@ do
         DialogModule.LoadButton = loadButton
         DialogModule.SaveButton = saveButton
         DialogModule.DeleteButton = deleteButton
+        DialogModule.ClearButton = clearButton
         DialogModule.PasteButton = pasteButton
         DialogModule.PasteCloseButton = pasteCloseButton
         DialogModule.TextBox = textBox
