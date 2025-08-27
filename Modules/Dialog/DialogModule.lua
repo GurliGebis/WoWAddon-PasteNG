@@ -18,14 +18,44 @@
 
 local addonName, _ = ...
 local PasteNG = LibStub("AceAddon-3.0"):GetAddon(addonName)
-local DialogModule = PasteNG:NewModule("DialogModule", "AceConsole-3.0")
+local DialogModule = PasteNG:NewModule("DialogModule", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0")
 local DBModule = PasteNG:GetModule("DBModule")
 local ConfigModule = PasteNG:GetModule("ConfigModule")
 local MinimapModule = PasteNG:GetModule("MinimapModule")
+local AceSerializer = LibStub("AceSerializer-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local AceGUI = LibStub("AceGUI-3.0")
+
+local messagePrefixes = {
+    PASTENG_SHARE = "PASTENG_SHARE"
+}
+
+local function GetPartyMembers()
+    local numberOfMembers = GetNumGroupMembers()
+    local lookupType
+
+    if IsInRaid() then
+        lookupType = "raid"
+    else
+        lookupType = "party"
+    end
+
+    local result = {}
+
+    local playerName = GetUnitName("player")
+
+    for i = 1, numberOfMembers do
+        local name = GetUnitName(lookupType..i, true)
+
+        if name ~= playerName then
+            tinsert(result, name)
+        end
+    end
+
+    return result
+end
 
 do
     local isPastedAllowed = false
@@ -178,6 +208,16 @@ do
 
         -- Everything is fine, so we enable the buttons.
         SetButtonStatus(true)
+    end
+
+    function DialogModule:RefreshShareButton()
+        local numberOfMembers = GetPartyMembers()
+
+        if #numberOfMembers > 0 and isPastedAllowed then
+            DialogModule.ShareButton:SetEnabled(true)
+        else
+            DialogModule.ShareButton:SetEnabled(false)
+        end
     end
 
     function DialogModule:SendPaste(text, target)
@@ -339,6 +379,27 @@ do
         DialogModule.TextBox:SetFocus()
 
         DialogModule:RefreshPasteCloseButtons()
+        DialogModule:RefreshShareButton()
+    end
+
+    local function ShareButton_OnClick()
+        local function SharePaste(target)
+            local serializedMessage = AceSerializer:Serialize(DialogModule.TextBox:GetText())
+
+            DialogModule:SendCommMessage(messagePrefixes.PASTENG_SHARE, serializedMessage, "WHISPER", target)
+        end
+
+        MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
+            rootDescription:CreateTitle(L["Select target to send to"])
+
+            EnableMenuScrolling(rootDescription)
+
+            for _, partyMember in ipairs(GetPartyMembers()) do
+                rootDescription:CreateButton(partyMember, function()
+                    SharePaste(partyMember)
+                end)
+            end
+        end)
     end
 
     local function PasteCloseButton_OnClick()
@@ -354,6 +415,7 @@ do
         DialogModule:UpdateFooter()
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshPasteCloseButtons()
+        DialogModule:RefreshShareButton()
     end
 
     local function TextBox_OnEnterPressed()
@@ -500,6 +562,7 @@ do
         local saveButton = CreateButton(mainFrame.frame, loadButton, L["Save"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local deleteButton = CreateButton(mainFrame.frame, saveButton, L["Delete"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local clearButton = CreateButton(mainFrame.frame, deleteButton, L["Clear"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
+        local shareButton = CreateButton(mainFrame.frame, clearButton, L["Share"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local pasteButton = CreateButton(mainFrame.frame, mainFrame.frame, L["Paste"], bottomButtonWidth, 24, "BOTTOMLEFT", 15, 45)
         local pasteCloseButton = CreateButton(mainFrame.frame, pasteButton, L["Paste and Close"], bottomButtonWidth, 24, "BOTTOMLEFT", bottomButtonWidth, 0)
         local textBox, textBoxContainer = CreateTextBox(mainFrame)
@@ -510,6 +573,7 @@ do
         DialogModule.SaveButton = saveButton
         DialogModule.DeleteButton = deleteButton
         DialogModule.ClearButton = clearButton
+        DialogModule.ShareButton = shareButton
         DialogModule.PasteButton = pasteButton
         DialogModule.PasteCloseButton = pasteCloseButton
         DialogModule.TextBox = textBox
@@ -522,6 +586,7 @@ do
         saveButton:SetScript("OnClick", SaveButton_OnClick)
         deleteButton:SetScript("OnClick", DeleteButton_OnClick)
         clearButton:SetScript("OnClick", ClearButton_OnClick)
+        shareButton:SetScript("OnClick", ShareButton_OnClick)
         pasteButton:SetScript("OnClick", PasteButton_OnClick)
         pasteCloseButton:SetScript("OnClick", PasteCloseButton_OnClick)
         textBox:SetCallback("OnTextChanged", function() TextBox_OnTextChanged() end)
@@ -547,6 +612,7 @@ do
         -- Refresh button status
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshPasteCloseButtons()
+        DialogModule:RefreshShareButton()
 
         -- Hook the escape key, so we can close the dialog with the escape key.
         local globalFrameName = "PasteNGDialogFrame"
@@ -561,6 +627,8 @@ do
 
         DialogModule.PasteDialog:Show()
         DialogModule.TextBox:SetFocus()
+
+        DialogModule:RefreshShareButton()
     end
 
     function DialogModule:ResetCoordinates()
@@ -593,6 +661,31 @@ function DialogModule:OnInitialize()
     self:CreateDialog()
 
     DialogModule:RegisterChatCommand("pasteng", "HandleChatCommand")
+end
+
+function DialogModule:SharePasteReceived(_, message, _, sender)
+    -- Check if the sender is in our group.
+    if not IsInGroup() or not UnitInParty(sender) then
+        return
+    end
+
+    local success, deserializedMessage = AceSerializer:Deserialize(message)
+
+    if success == false then
+        return
+    end
+
+    -- Ask the user if they want to accept the paste.
+    StaticPopupDialogs["PASTENG_SHARE_CONFIRM"].text = string.format(L["%s wants to share a paste with you. Do you want to accept it?"], sender)
+    StaticPopup_Show("PASTENG_SHARE_CONFIRM", nil, nil, deserializedMessage)
+end
+
+function DialogModule:OnEnable()
+    -- Register the event for when the player changes their group status.
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", "RefreshShareButton")
+
+    -- Register the share message, so we can receive shared pastes.
+    self:RegisterComm(messagePrefixes.PASTENG_SHARE, "SharePasteReceived")
 end
 
 function PrintUsage()
@@ -760,6 +853,25 @@ StaticPopupDialogs["PASTENG_BATTLE_NET_FRIEND_NOT_FOUND"] = {
 StaticPopupDialogs["PASTENG_POSITION_RESET"] = {
     text = L["Window size and position has been reset."],
     button1 = "OK",
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_SHARE_CONFIRM"] = {
+    text = "",
+    button1 = ACCEPT,
+    button2 = CANCEL,
+    OnAccept = function(self, data)
+        -- Show the dialog and set the text box to the received paste.
+        DialogModule:ShowDialog()
+        DialogModule.TextBox:SetText(data)
+        DialogModule:UpdateFooter()
+
+        DialogModule:RefreshPasteCloseButtons()
+        DialogModule:RefreshShareButton()
+    end,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,

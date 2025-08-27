@@ -1,3 +1,6 @@
+## 11.2.0-20250830-1
+* Implement functionality to share paste with party members.
+
 ## 11.2.0-20250827-1
 * Only have the Clear button enabled, if something can be cleared.
 
