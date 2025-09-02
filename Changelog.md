@@ -1,3 +1,6 @@
+## 11.2.0-20250902-1
+* Added setting to enable/disable sharing.
+
 ## 11.2.0-20250830-1
 * Implement functionality to share paste with party members.
 

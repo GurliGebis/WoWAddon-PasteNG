@@ -213,7 +213,9 @@ do
     function DialogModule:RefreshShareButton()
         local numberOfMembers = GetPartyMembers()
 
-        if #numberOfMembers > 0 and isPastedAllowed then
+        local sharingEnabled = DBModule:GetValue("enable_sharing")
+
+        if #numberOfMembers > 0 and isPastedAllowed and sharingEnabled then
             DialogModule.ShareButton:SetEnabled(true)
         else
             DialogModule.ShareButton:SetEnabled(false)
@@ -666,6 +668,12 @@ end
 function DialogModule:SharePasteReceived(_, message, _, sender)
     -- Check if the sender is in our group.
     if not IsInGroup() or not UnitInParty(sender) then
+        return
+    end
+
+    local sharingEnabled = DBModule:GetValue("enable_sharing")
+
+    if sharingEnabled == false then
         return
     end
 

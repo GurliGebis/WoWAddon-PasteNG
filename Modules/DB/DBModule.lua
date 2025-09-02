@@ -29,7 +29,8 @@ local defaultOptions = {
         savedPastes = {},
         selected_target = CHAT_DEFAULT,
         selected_target_name = "",
-        shift_enter_send = "false"
+        shift_enter_send = "false",
+        enable_sharing = "true"
     }
 }
 

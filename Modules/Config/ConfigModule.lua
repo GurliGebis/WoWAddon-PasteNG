@@ -133,6 +133,29 @@ local options = {
             set = function(_, val)
                 SetKeybinding(keyBindingName_PasteNG_Open, val)
             end
+        },
+        sharingHeader = {
+            order = 9,
+            name = L["Sharing"],
+            type = "header"
+        },
+        sharingDescription = {
+            order = 10,
+            name = L["Sharing with party / raid members"],
+            type = "description"
+        },
+        enableSharing = {
+            order = 11,
+            type = "toggle",
+            width = "double",
+            name = L["Enable sharing with party / raid members"],
+            desc = L["When in an group, allow sending and recieving pastes from group members"],
+            get = function()
+                return DBModule:GetValue("enable_sharing")
+            end,
+            set = function(_, val)
+                DBModule:SetValue("enable_sharing", val)
+            end
         }
     }
 }
