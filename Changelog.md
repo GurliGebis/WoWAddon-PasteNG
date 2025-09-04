@@ -1,3 +1,6 @@
+# 11.2.0-20250909-1
+* Optimize DBModule to improve array operations.
+
 # 11.2.0-20250906-1
 * Optimize MinimapModule and better error handling.
 

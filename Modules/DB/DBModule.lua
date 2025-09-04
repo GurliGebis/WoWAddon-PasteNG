@@ -70,9 +70,11 @@ do
     end
 
     function DBModule:AnySavedPastes()
-        local list = self:ListSavedPastes()
+        for _ in pairs(self:GetProfile().savedPastes) do
+            return true
+        end
 
-        return #list > 0
+        return false
     end
 
     function DBModule:DoesPasteExist(name)
@@ -82,11 +84,10 @@ do
     end
 
     function DBModule:ListSavedPastes()
-        local profile = self:GetProfile()
         local result = {}
 
-        for k, _ in pairs(profile.savedPastes) do
-            tinsert(result, k)
+        for k in pairs(self:GetProfile().savedPastes) do
+            result[#result+1] = k
         end
 
         table.sort(result)
@@ -95,23 +96,18 @@ do
     end
 
     function DBModule:LoadPaste(name)
-        local encoded = self:GetProfile()["savedPastes"][name]
-
-        if not encoded then
-            return nil
-        end
-
-        return base64_dec(encoded)
+        local encoded = self:GetProfile().savedPastes[name]
+        return encoded and base64_dec(encoded) or nil
     end
 
     function DBModule:SavePaste(name, text)
         local encoded = base64_enc(text)
 
-        self:GetProfile()["savedPastes"][name] = encoded
+        self:GetProfile().savedPastes[name] = encoded
     end
 
     function DBModule:DeletePaste(name)
-        self:GetProfile()["savedPastes"][name] = nil
+        self:GetProfile().savedPastes[name] = nil
     end
 end
 
