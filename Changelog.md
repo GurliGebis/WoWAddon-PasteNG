@@ -1,3 +1,6 @@
+## 11.2.0-20250904-2
+* Correct spelling error in options dialog.
+
 ## 11.2.0-20250904-1
 * Added Russian (ruRU) locale.
 

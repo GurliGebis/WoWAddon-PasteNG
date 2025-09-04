@@ -149,7 +149,7 @@ local options = {
             type = "toggle",
             width = "double",
             name = L["Enable sharing with party / raid members"],
-            desc = L["When in an group, allow sending and recieving pastes from group members"],
+            desc = L["When in a group, allow sending and recieving pastes from group members"],
             get = function()
                 return DBModule:GetValue("enable_sharing")
             end,
