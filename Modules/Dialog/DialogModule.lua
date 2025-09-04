@@ -261,6 +261,11 @@ do
 
         -- Function to split a line if it exceeds the maximum length
         local function SplitLineIfTooLong(line)
+            if line:find("^/%w") then
+                -- If the line starts with a forward slash, we shouldn't try to split it up
+                return { line }
+            end
+
             local max_length = 250
             local result = {}
             local current_line = ""

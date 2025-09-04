@@ -1,5 +1,6 @@
 ## 11.2.0-20250904-2
 * Correct spelling error in options dialog.
+* Don't split lines starting with a forward slash.
 
 ## 11.2.0-20250904-1
 * Added Russian (ruRU) locale.
