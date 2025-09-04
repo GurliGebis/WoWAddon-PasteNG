@@ -1,3 +1,6 @@
+## 11.2.0-20250904-1
+* Added Russian (ruRU) locale.
+
 ## 11.2.0-20250902-1
 * Added setting to enable/disable sharing.
 
