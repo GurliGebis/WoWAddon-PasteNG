@@ -1,56 +1,56 @@
-## 11.2.0-20250904-2
+# 11.2.0-20250904-2
 * Correct spelling error in options dialog.
 * Don't split lines starting with a forward slash.
 
-## 11.2.0-20250904-1
+# 11.2.0-20250904-1
 * Added Russian (ruRU) locale.
 
-## 11.2.0-20250902-1
+# 11.2.0-20250902-1
 * Added setting to enable/disable sharing.
 
-## 11.2.0-20250830-1
+# 11.2.0-20250830-1
 * Implement functionality to share paste with party members.
 
-## 11.2.0-20250827-1
+# 11.2.0-20250827-1
 * Only have the Clear button enabled, if something can be cleared.
 
-## 11.2.0-20250825-1
+# 11.2.0-20250825-1
 * Changed SendChatMessage to be C_ChatInfo.SendChatMessage on Retail.
 
-## 11.2.0-20250815-1
+# 11.2.0-20250815-1
 * Enable scrolling for the Load and Delete dropdown menues.
 
-## 11.2.0-20250810-1
+# 11.2.0-20250810-1
 * Fixed problem caused by previous fix in MoP Classic.
 
-## 11.2.0-20250808-1
+# 11.2.0-20250808-1
 * Fixed issue with saving pastes.
 
-## 11.2.0-20250806-1
+# 11.2.0-20250806-1
 * Updated TOC to match WoW 11.2.0
 
-## 11.1.7-20250619-1
+# 11.1.7-20250619-1
 * Updated TOC to match WoW 11.1.7
 
-## 11.1.5-20250525-1
+# 11.1.5-20250525-1
 * Updated TOC to support Classic, MoP Beta and Retail PTR.
 
-## 11.1.5-20250422-1
+# 11.1.5-20250422-1
 * Updated TOC to match WoW 11.1.5
 
-## 11.1.0-20250305-1
+# 11.1.0-20250305-1
 * Updated Classic TOC version to latest version.
 
-## 11.1.0-20250225-1
+# 11.1.0-20250225-1
 * Updated TOC to match WoW 11.1.0
 
-## 11.0.7-20250220-1
+# 11.0.7-20250220-1
 * Updated TOC to support Cataclysm Classic.
 
-## 11.0.7-20250128-1
+# 11.0.7-20250128-1
 * Added category to TOC file.
 
-## 11.0.7-20241218-1
+# 11.0.7-20241218-1
 * Updated TOC to match WoW 11.0.7
 
 # 11.0.5-20241126-1
