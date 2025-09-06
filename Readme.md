@@ -17,7 +17,7 @@ Some of the new features compared to the original Paste addon:
 ## I'm getting a warning about old Paste/PasteNG addon being installed
 If you get the following warning when you log in:
 
-![Warning dialog](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/master/Images/old-paste-found.webp)
+![Warning dialog](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/main/Images/old-paste-found.webp)
 
 It is due to either the old Paste addon from 2016 being installed, of an older version of PasteNG.
 
@@ -25,7 +25,7 @@ To solve the issue, you should remove the old addon - the easiest way to do this
 
 ## Screenshot
 ### PasteNG window
-![The main PasteNG window](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/master/Images/main-window.webp)
+![The main PasteNG window](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/main/Images/main-window.webp)
 
 ### Settings window
-![The settings window](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/master/Images/settings.webp)
+![The settings window](https://raw.githubusercontent.com/GurliGebis/WoWAddon-PasteNG/main/Images/settings.webp)
