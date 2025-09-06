@@ -1,3 +1,6 @@
+# 11.2.0-20250906-1
+* Optimize MinimapModule and better error handling.
+
 # 11.2.0-20250904-2
 * Correct spelling error in options dialog.
 * Don't split lines starting with a forward slash.

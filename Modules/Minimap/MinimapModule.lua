@@ -20,6 +20,8 @@ local addonName, _ = ...
 local PasteNG = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local MinimapModule = PasteNG:NewModule("MinimapModule")
 local DBModule = PasteNG:GetModule("DBModule")
+local DialogModule
+local ConfigModule
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
@@ -27,40 +29,39 @@ do
     local MinimapIcon = nil
 
     function MinimapModule:OnInitialize()
-        -- Create the minimap icon.
-        MinimapModule:CreateMinimapIcon()
-
-        -- Refresh it's status.
-        MinimapModule:RefreshMinimapIcon()
+        self:CreateMinimapIcon()
     end
 
     function MinimapModule:ToggleMinimapIcon()
         -- Invert the hide status.
         DBModule.AceDB.profile.minimapIcon.hide = not DBModule.AceDB.profile.minimapIcon.hide
 
-        -- Refresh the minimap icon.
-        MinimapModule:RefreshMinimapIcon()
+        self:RefreshMinimapIcon()
     end
 
     function MinimapModule:RefreshMinimapIcon()
-        -- Refresh the minimap icon.
-        MinimapIcon:Refresh(addonName)
+        if MinimapIcon then
+            MinimapIcon:Refresh(addonName)
+        end
     end
+
+    local leftClickText = "|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"]
+    local rightClickText = "|cffffff00" .. L["Right Click"] .. "|r " .. L["to open options"]
 
     function MinimapModule:CreateTooltip(tooltip)
         tooltip:AddLine("PasteNG")
-        tooltip:AddLine("|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"])
-        tooltip:AddLine("|cffffff00" .. L["Right Click"] .. "|r " .. L["to open options"])
+        tooltip:AddLine(leftClickText)
+        tooltip:AddLine(rightClickText)
     end
     
     function MinimapModule:ButtonClicked(button)
         if button == "LeftButton" then
             -- Show the PasteNG dialog
-            local DialogModule = PasteNG:GetModule("DialogModule")
+            DialogModule = DialogModule or PasteNG:GetModule("DialogModule")
             DialogModule:ShowDialog()
         else
             -- Show config dialog
-            local ConfigModule = PasteNG:GetModule("ConfigModule")
+            ConfigModule = ConfigModule or PasteNG:GetModule("ConfigModule")
             Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
         end
     end
@@ -80,10 +81,10 @@ do
             text = "PasteNG",
             icon = "Interface\\Icons\\inv_scroll_08",
             OnClick = function(_, button)
-                MinimapModule:ButtonClicked(button)
+                self:ButtonClicked(button)
             end,
             OnTooltipShow = function(tooltip)
-                MinimapModule:CreateTooltip(tooltip)
+                self:CreateTooltip(tooltip)
             end,
             OnLeave = HideTooltip
         })
@@ -91,6 +92,8 @@ do
         -- Register the minimap button / data broker object.
         if MinimapIcon then
             MinimapIcon:Register(addonName, minimapButton, DBModule.AceDB.profile.minimapIcon)
+
+            self:RefreshMinimapIcon()
         end
     end
 end
