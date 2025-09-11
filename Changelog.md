@@ -1,3 +1,6 @@
+# 11.2.0-20250911-1
+* Optimize ConfigModule to simplify code and improve readability.
+
 # 11.2.0-20250909-1
 * Optimize DBModule to improve array operations.
 

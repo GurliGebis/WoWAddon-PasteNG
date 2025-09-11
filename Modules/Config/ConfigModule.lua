@@ -23,6 +23,7 @@ local DBModule = PasteNG:GetModule("DBModule")
 local MinimapModule = PasteNG:GetModule("MinimapModule")
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local DialogModule
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
@@ -32,17 +33,12 @@ _G.BINDING_NAME_PASTENG_OPEN = L["Open the PasteNG window"]
 local keyBindingName_PasteNG_Open = "PASTENG_OPEN"
 
 local function SetKeybinding(bindingName, binding)
-    -- Get existing bindings for the key binding.
-    local binding1, binding2 = GetBindingKey(bindingName)
-
-    -- Remove the existing binding.
-    if binding1 then
-        -- Remove the existing primary binding.
-        SetBinding(binding1)
-    end
-    if binding2 then
-        -- Remove the existing secondary binding.
-        SetBinding(binding2)
+    -- Get existing bindings for the key binding and remove them.
+    for _, key in ipairs({ GetBindingKey(bindingName) }) do
+        if key then
+            -- Remove existing binding.
+            SetBinding(key)
+        end
     end
 
     -- If ESC was pressed to clear the binding, binding is empty.
@@ -53,11 +49,8 @@ local function SetKeybinding(bindingName, binding)
         SetBinding(binding, bindingName)
     end
 
-    -- Get the current key binding set.
-    local currentKeyBindingSet = GetCurrentBindingSet()
-
     -- Save the key binding to the current key binding set.
-    SaveBindings(currentKeyBindingSet)
+    SaveBindings(GetCurrentBindingSet())
 end
 
 local options = {
@@ -112,7 +105,7 @@ local options = {
             name = L["Reset window size and position"],
             desc = L["Resets the window size and position on screen to the default"],
             func = function()
-                local DialogModule = PasteNG:GetModule("DialogModule")
+                DialogModule = DialogModule or PasteNG:GetModule("DialogModule")
                 DialogModule:ResetCoordinates()
             end
         },
