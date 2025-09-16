@@ -29,7 +29,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local AceGUI = LibStub("AceGUI-3.0")
 
 local messagePrefixes = {
-    PASTENG_SHARE = "PASTENG_SHARE"
+    PASTENG_SHARE = "PASTENG_SHARE",
+    PASTENG_PRESENCE = "PASTENG_PRESENCE"
 }
 
 local function GetPartyMembers()
@@ -59,6 +60,20 @@ end
 
 do
     local isPastedAllowed = false
+    local hasShownUpdateNotification = false
+    local addonPresence = {}
+
+    function DialogModule:AnnouncePresence()
+        local target
+
+        if IsInRaid() then
+            target = "RAID"
+        else
+            target = "PARTY"
+        end
+
+        self:SendCommMessage(messagePrefixes.PASTENG_PRESENCE, PasteNG.Version, target)
+    end
 
     local function GetTextBoxHeader()
         if IsWindowsClient() then
@@ -222,6 +237,14 @@ do
         end
     end
 
+    local function InternalSendChatMessageWrapper(message, chatType, target)
+        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+            C_ChatInfo.SendChatMessage(message, chatType, nil, target)
+        else
+            SendChatMessage(message, chatType, nil, target)
+        end
+    end
+
     function DialogModule:SendPaste(text, target)
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
@@ -251,11 +274,7 @@ do
 
                 BNSendWhisper(bnetAccountID, message)
             else
-                if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-                    C_ChatInfo.SendChatMessage(message, chatType, nil, target)
-                else
-                    SendChatMessage(message, chatType, nil, target)
-                end
+                InternalSendChatMessageWrapper(message, chatType, target)
             end
         end
 
@@ -391,9 +410,13 @@ do
 
     local function ShareButton_OnClick()
         local function SharePaste(target)
-            local serializedMessage = AceSerializer:Serialize(DialogModule.TextBox:GetText())
-
-            DialogModule:SendCommMessage(messagePrefixes.PASTENG_SHARE, serializedMessage, "WHISPER", target)
+            if addonPresence[target] then
+                local serializedMessage = AceSerializer:Serialize(DialogModule.TextBox:GetText())
+                DialogModule:SendCommMessage(messagePrefixes.PASTENG_SHARE, serializedMessage, "WHISPER", target)
+            else
+                InternalSendChatMessageWrapper(L["Please install or update the PasteNG addon to receive shared pastes."], "WHISPER", target)
+                PasteNG:Print(string.format(L["Player %s does not have PasteNG. Whisper sent."], target))
+            end
         end
 
         MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
@@ -656,6 +679,30 @@ do
         -- Show message box.
         StaticPopup_Show("PASTENG_POSITION_RESET")
     end
+
+    function DialogModule:PresenceReceived(_, message, _, sender)
+        if not sender or sender == UnitName("player") or not message then
+            return
+        end
+
+        if message > PasteNG.Version and not hasShownUpdateNotification then
+            PasteNG:Print(L["Your PasteNG version is out of date! A newer version is available."])
+            hasShownUpdateNotification = true
+        end
+
+        -- Only reply if we haven't seen this sender before
+        if not addonPresence[sender] then
+            DialogModule:SendCommMessage(messagePrefixes.PASTENG_PRESENCE, PasteNG.Version, "WHISPER", sender)
+            addonPresence[sender] = true
+        end
+    end
+
+    function DialogModule:OnGroupRosterUpdate()
+        wipe(addonPresence)
+
+        self:AnnouncePresence()
+        self:RefreshShareButton()
+    end
 end
 
 function DialogModule:OnInitialize()
@@ -695,19 +742,23 @@ end
 
 function DialogModule:OnEnable()
     -- Register the event for when the player changes their group status.
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", "RefreshShareButton")
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnGroupRosterUpdate")
 
-    -- Register the share message, so we can receive shared pastes.
+    -- Register communication messages
     self:RegisterComm(messagePrefixes.PASTENG_SHARE, "SharePasteReceived")
+    self:RegisterComm(messagePrefixes.PASTENG_PRESENCE, "PresenceReceived")
+
+    -- Announce our presence on when addon is loaded
+    C_Timer.After(2, function() self:AnnouncePresence() end)
 end
 
 function PrintUsage()
-    print(L["PasteNG Usage:"])
-    print(L["/pasteng show - Show the pasteng dialog"])
-    print(L["/pasteng config - Open the configuration"])
-    print(L["/pasteng minimap - Toggle the minimap icon"])
-    print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
-    print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
+    PasteNG:Print(L["PasteNG Usage:"])
+    PasteNG:Print(L["/pasteng show - Show the pasteng dialog"])
+    PasteNG:Print(L["/pasteng config - Open the configuration"])
+    PasteNG:Print(L["/pasteng minimap - Toggle the minimap icon"])
+    PasteNG:Print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
+    PasteNG:Print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
 end
 
 local function SplitString(input)
@@ -756,12 +807,12 @@ function DialogModule:HandleChatCommand(message)
         local channel = parameters[3] or CHAT_DEFAULT
 
         if not text then
-            print(L["Saved paste not found"])
+            PasteNG:Print(L["Saved paste not found"])
             return
         end
 
         if channel == BN_WHISPER or channel == CHAT_MSG_WHISPER_INFORM then
-            print(L["You cannot send using whisper this way - please use the dialog instead"])
+            PasteNG:Print(L["You cannot send using whisper this way - please use the dialog instead"])
             return
         end
 
