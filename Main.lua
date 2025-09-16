@@ -17,7 +17,7 @@
 ]]
 
 local addonName, _ = ...
-PasteNG = LibStub("AceAddon-3.0"):NewAddon(addonName)
+PasteNG = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0")
 
 PasteNG.Name = C_AddOns.GetAddOnMetadata(addonName, "Title")
 PasteNG.Version = C_AddOns.GetAddOnMetadata(addonName, "Version")

@@ -702,12 +702,12 @@ function DialogModule:OnEnable()
 end
 
 function PrintUsage()
-    print(L["PasteNG Usage:"])
-    print(L["/pasteng show - Show the pasteng dialog"])
-    print(L["/pasteng config - Open the configuration"])
-    print(L["/pasteng minimap - Toggle the minimap icon"])
-    print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
-    print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
+    PasteNG:Print(L["PasteNG Usage:"])
+    PasteNG:Print(L["/pasteng show - Show the pasteng dialog"])
+    PasteNG:Print(L["/pasteng config - Open the configuration"])
+    PasteNG:Print(L["/pasteng minimap - Toggle the minimap icon"])
+    PasteNG:Print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
+    PasteNG:Print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
 end
 
 local function SplitString(input)
@@ -756,12 +756,12 @@ function DialogModule:HandleChatCommand(message)
         local channel = parameters[3] or CHAT_DEFAULT
 
         if not text then
-            print(L["Saved paste not found"])
+            PasteNG:Print(L["Saved paste not found"])
             return
         end
 
         if channel == BN_WHISPER or channel == CHAT_MSG_WHISPER_INFORM then
-            print(L["You cannot send using whisper this way - please use the dialog instead"])
+            PasteNG:Print(L["You cannot send using whisper this way - please use the dialog instead"])
             return
         end
 

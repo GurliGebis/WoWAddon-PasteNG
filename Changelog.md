@@ -1,3 +1,6 @@
+# 11.2.0-20250916-1
+* Change print functions to use AceConsole print.
+
 # 11.2.0-20250911-1
 * Optimize ConfigModule to simplify code and improve readability.
 
