@@ -1,4 +1,4 @@
-## Interface: 110200,11507,40402,50500
+## Interface: 110200,11507,40402,50501
 ## Title: PasteNG
 ## Description: Enables multi-line/unlimited-length pasting of text or commands into WoW
 ## Version: @project-version@

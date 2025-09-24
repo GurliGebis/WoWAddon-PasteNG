@@ -1,3 +1,6 @@
+# 11.2.0-20250924-1
+* Updated Classic TOC to match 5.5.1
+
 # 11.2.0-20250916-1
 * Change print functions to use AceConsole print.
 * Tell share target if they are missing PasteNG.
