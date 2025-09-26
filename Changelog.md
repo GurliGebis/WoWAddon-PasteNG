@@ -1,3 +1,6 @@
+# 11.2.0-20250926-2
+* Change version checks to check for functionality instead of game version.
+
 # 11.2.0-20250926-1
 * Make sure we don't try to send communications when not in a group.
 * Remove Cataclysm version from TOC file.

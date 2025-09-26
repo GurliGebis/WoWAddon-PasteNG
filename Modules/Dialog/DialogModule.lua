@@ -242,7 +242,7 @@ do
     end
 
     local function InternalSendChatMessageWrapper(message, chatType, target)
-        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+        if C_ChatInfo.SendChatMessage then
             C_ChatInfo.SendChatMessage(message, chatType, nil, target)
         else
             SendChatMessage(message, chatType, nil, target)
@@ -854,7 +854,7 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
     OnAccept = function(self, data)
         local pasteName
 
-        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+        if self.EditBox then
             pasteName = self.EditBox:GetText()
         else
             pasteName = self.editBox:GetText()
