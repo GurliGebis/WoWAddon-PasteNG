@@ -37,7 +37,9 @@ local function GetPartyMembers()
     local numberOfMembers = GetNumGroupMembers()
     local lookupType
 
-    if IsInRaid() then
+    if not IsInGroup() then
+        return {}
+    elseif IsInRaid() then
         lookupType = "raid"
     else
         lookupType = "party"
@@ -66,7 +68,9 @@ do
     function DialogModule:AnnouncePresence()
         local target
 
-        if IsInRaid() then
+        if not IsInGroup() then
+            return
+        elseif IsInRaid() then
             target = "RAID"
         else
             target = "PARTY"
