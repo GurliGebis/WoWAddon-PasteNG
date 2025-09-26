@@ -1,3 +1,6 @@
+# 11.2.0-20250926-1
+* Make sure we don't try to send communications when not in a group.
+
 # 11.2.0-20250924-1
 * Updated Classic TOC to match 5.5.1
 
