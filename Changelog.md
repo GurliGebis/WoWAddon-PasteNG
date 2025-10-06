@@ -1,3 +1,6 @@
+# 11.2.5-20251006-1
+* Updated TOC to match WoW 11.2.5
+
 # 11.2.0-20250926-2
 * Change version checks to check for functionality instead of game version.
 
