@@ -1,3 +1,6 @@
+# 11.2.5-20251022-1
+* Fixed "You aren't in a party" error by adding check for group size.
+
 # 11.2.5-20251006-1
 * Updated TOC to match WoW 11.2.5
 

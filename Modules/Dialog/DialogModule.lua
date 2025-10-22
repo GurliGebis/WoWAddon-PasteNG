@@ -68,9 +68,11 @@ do
     function DialogModule:AnnouncePresence()
         local target
 
-        if not IsInGroup() then
+        if not IsInGroup() or GetNumGroupMembers() == 0 then
             return
-        elseif IsInRaid() then
+        end
+
+        if IsInRaid() then
             target = "RAID"
         else
             target = "PARTY"
