@@ -72,6 +72,12 @@ do
             return
         end
 
+        -- Don't send announcements when inside scenarios, since we often have NPCs on our team, which can result in "You aren't in a party" message.
+        local instanceType = select(2, GetInstanceInfo())
+        if instanceType == "scenario" then
+            return
+        end
+
         if IsInRaid() then
             target = "RAID"
         else

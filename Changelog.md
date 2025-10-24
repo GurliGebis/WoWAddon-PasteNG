@@ -1,3 +1,6 @@
+# 11.2.5-20251024-1
+* Don't send announcements when inside scenarios, since that also can cause the "You aren't in a party" error.
+
 # 11.2.5-20251022-1
 * Fixed "You aren't in a party" error by adding check for group size.
 
