@@ -1,3 +1,6 @@
+# 11.2.5-20251028-1
+* Ensure GetPartyMembers returns an empty array if GetNumGroupMembers() returns 0.
+
 # 11.2.5-20251024-1
 * Don't send announcements when inside scenarios, since that also can cause the "You aren't in a party" error.
 

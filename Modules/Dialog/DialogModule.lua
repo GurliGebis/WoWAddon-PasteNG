@@ -37,7 +37,7 @@ local function GetPartyMembers()
     local numberOfMembers = GetNumGroupMembers()
     local lookupType
 
-    if not IsInGroup() then
+    if not IsInGroup() or numberOfMembers == 0 then
         return {}
     elseif IsInRaid() then
         lookupType = "raid"
