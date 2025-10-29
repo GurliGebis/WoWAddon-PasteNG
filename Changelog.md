@@ -1,3 +1,6 @@
+# 11.2.5-20251029-1
+* Added setting to disable announcements to party/raid members when joining groups.
+
 # 11.2.5-20251028-1
 * Ensure GetPartyMembers returns an empty array if GetNumGroupMembers() returns 0.
 

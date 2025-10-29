@@ -66,6 +66,10 @@ do
     local addonPresence = {}
 
     function DialogModule:AnnouncePresence()
+        if DBModule:GetValue("disable_announcements") then
+            return
+        end
+
         local target
 
         if not IsInGroup() or GetNumGroupMembers() == 0 then

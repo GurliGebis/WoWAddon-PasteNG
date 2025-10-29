@@ -149,6 +149,19 @@ local options = {
             set = function(_, val)
                 DBModule:SetValue("enable_sharing", val)
             end
+        },
+        disableAnnouncements = {
+            order = 12,
+            type = "toggle",
+            width = "double",
+            name = L["Disable announcements"],
+            desc = L["Disable announcing presence to party/raid members when joining groups"],
+            get = function()
+                return DBModule:GetValue("disable_announcements")
+            end,
+            set = function(_, val)
+                DBModule:SetValue("disable_announcements", val)
+            end
         }
     }
 }
