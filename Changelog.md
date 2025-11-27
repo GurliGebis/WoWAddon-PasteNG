@@ -1,3 +1,6 @@
+# 11.2.5-20251127-1
+* Implemented import/export of pastes.
+
 # 11.2.5-20251029-1
 * Added setting to disable announcements to party/raid members when joining groups.
 

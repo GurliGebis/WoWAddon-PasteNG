@@ -209,6 +209,20 @@ do
         end
     end
 
+    function DialogModule:RefreshExportButton()
+        if not DialogModule.ExportButton then
+            return
+        end
+
+        -- Export button is enabled if there are saved pastes
+        local anySavedPastes = DBModule:AnySavedPastes()
+        if anySavedPastes then
+            DialogModule.ExportButton:Enable()
+        else
+            DialogModule.ExportButton:Disable()
+        end
+    end
+
     function DialogModule:RefreshPasteCloseButtons()
         local function SetButtonStatus(enabled)
             DialogModule.PasteButton:SetEnabled(enabled)
@@ -448,6 +462,98 @@ do
         end)
     end
 
+    local function ExportButton_OnClick()
+        DialogModule:ShowExportDialog()
+    end
+
+    local function ImportButton_OnClick()
+        DialogModule:ShowImportDialog()
+    end
+
+    function DialogModule:ShowExportDialog()
+        local exportData = DBModule:ExportAllPastes()
+
+        if not exportData or exportData == "" then
+            PasteNG:Print(L["No pastes to export"])
+            return
+        end
+
+        if not DialogModule.ExportFrame then
+            local frame = AceGUI:Create("Frame")
+
+            local minimumFrameWidth = 600
+            local minimumFrameHeight = 450
+
+            frame:SetWidth(minimumFrameWidth)
+            frame:SetHeight(minimumFrameHeight)
+            frame:SetLayout("Fill")
+            frame:SetTitle(L["Export Saved Pastes"])
+
+            -- Prevent the window from being dragged off screen
+            frame.frame:SetClampedToScreen(true)
+
+            -- Set frame strata
+            frame.frame:SetFrameStrata("DIALOG")
+
+            -- Make it fixed size
+            frame:EnableResize(false)
+
+            -- Create the main content group
+            local contentGroup = AceGUI:Create("SimpleGroup")
+            contentGroup:SetLayout("Flow")
+            contentGroup:SetFullWidth(true)
+            contentGroup:SetFullHeight(true)
+
+            -- Create text box container
+            local textBoxContainer = AceGUI:Create("SimpleGroup")
+            textBoxContainer:SetLayout("Fill")
+            textBoxContainer:SetFullWidth(true)
+            textBoxContainer:SetFullHeight(true)
+
+            -- Create text box for export data
+            local textBox = AceGUI:Create("MultiLineEditBox")
+            textBox:SetMaxLetters(0) -- Allow unlimited characters
+            textBox:SetNumLines(15) -- Show more lines
+            textBox:SetFullWidth(true)
+            textBox:SetFullHeight(true)
+            textBox:DisableButton(true) -- Remove OK button
+            textBox:SetLabel(L["Copy the export data below and save it to a file:"])
+            textBoxContainer:AddChild(textBox)
+
+            contentGroup:AddChild(textBoxContainer)
+
+            frame:AddChild(contentGroup)
+
+            -- Store textbox reference on frame for easy access
+            frame.ExportTextBox = textBox
+
+            -- Close with escape key
+            local globalFrameName = "PasteNGExportFrame"
+            _G[globalFrameName] = frame.frame
+            tinsert(UISpecialFrames, globalFrameName)
+
+            DialogModule.ExportFrame = frame
+        end
+
+        -- Set the export data using the stored textbox reference
+        DialogModule.ExportFrame.ExportTextBox:SetText(exportData)
+
+        -- Show the dialog
+        DialogModule.ExportFrame:Show()
+
+        -- Auto-select the text for easy copying
+        C_Timer.After(0.1, function()
+            if DialogModule.ExportFrame and DialogModule.ExportFrame.ExportTextBox then
+                DialogModule.ExportFrame.ExportTextBox:HighlightText()
+                DialogModule.ExportFrame.ExportTextBox:SetFocus()
+            end
+        end)
+    end
+
+    function DialogModule:ShowImportDialog()
+        StaticPopup_Show("PASTENG_IMPORT")
+    end
+
     local function PasteCloseButton_OnClick()
         DialogModule.PasteDialog:Hide()
         DialogModule:SendPaste()
@@ -460,6 +566,7 @@ do
     local function TextBox_OnTextChanged()
         DialogModule:UpdateFooter()
         DialogModule:RefreshLoadDeleteButtons()
+        DialogModule:RefreshExportButton()
         DialogModule:RefreshPasteCloseButtons()
         DialogModule:RefreshShareButton()
     end
@@ -609,6 +716,8 @@ do
         local deleteButton = CreateButton(mainFrame.frame, saveButton, L["Delete"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local clearButton = CreateButton(mainFrame.frame, deleteButton, L["Clear"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local shareButton = CreateButton(mainFrame.frame, clearButton, L["Share"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
+        local exportButton = CreateButton(mainFrame.frame, shareButton, L["Export"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
+        local importButton = CreateButton(mainFrame.frame, exportButton, L["Import"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local pasteButton = CreateButton(mainFrame.frame, mainFrame.frame, L["Paste"], bottomButtonWidth, 24, "BOTTOMLEFT", 15, 45)
         local pasteCloseButton = CreateButton(mainFrame.frame, pasteButton, L["Paste and Close"], bottomButtonWidth, 24, "BOTTOMLEFT", bottomButtonWidth, 0)
         local textBox, textBoxContainer = CreateTextBox(mainFrame)
@@ -620,6 +729,8 @@ do
         DialogModule.DeleteButton = deleteButton
         DialogModule.ClearButton = clearButton
         DialogModule.ShareButton = shareButton
+        DialogModule.ExportButton = exportButton
+        DialogModule.ImportButton = importButton
         DialogModule.PasteButton = pasteButton
         DialogModule.PasteCloseButton = pasteCloseButton
         DialogModule.TextBox = textBox
@@ -633,6 +744,8 @@ do
         deleteButton:SetScript("OnClick", DeleteButton_OnClick)
         clearButton:SetScript("OnClick", ClearButton_OnClick)
         shareButton:SetScript("OnClick", ShareButton_OnClick)
+        exportButton:SetScript("OnClick", ExportButton_OnClick)
+        importButton:SetScript("OnClick", ImportButton_OnClick)
         pasteButton:SetScript("OnClick", PasteButton_OnClick)
         pasteCloseButton:SetScript("OnClick", PasteCloseButton_OnClick)
         textBox:SetCallback("OnTextChanged", function() TextBox_OnTextChanged() end)
@@ -657,6 +770,7 @@ do
 
         -- Refresh button status
         DialogModule:RefreshLoadDeleteButtons()
+        DialogModule:RefreshExportButton()
         DialogModule:RefreshPasteCloseButtons()
         DialogModule:RefreshShareButton()
 
@@ -841,6 +955,7 @@ end
 local function DoPasteSave(name, data)
     DBModule:SavePaste(name, data)
     DialogModule:RefreshLoadDeleteButtons()
+    DialogModule:RefreshExportButton()
 end
 
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
@@ -850,6 +965,7 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     OnAccept = function(self, data)
         DBModule:DeletePaste(data)
         DialogModule:RefreshLoadDeleteButtons()
+        DialogModule:RefreshExportButton()
     end,
     enterClicksFirstButton = true,
     timeout = 0,
@@ -951,6 +1067,75 @@ StaticPopupDialogs["PASTENG_SHARE_CONFIRM"] = {
 
         DialogModule:RefreshPasteCloseButtons()
         DialogModule:RefreshShareButton()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_IMPORT"] = {
+    text = L["Paste the export data below to import pastes:"],
+    button1 = L["Import"],
+    button2 = CANCEL,
+    hasEditBox = true,
+    editBoxWidth = 350,
+    OnAccept = function(self)
+        local importData
+
+        if self.EditBox then
+            importData = self.EditBox:GetText()
+        else
+            importData = self.editBox:GetText()
+        end
+
+        if not importData or importData:match("^%s*$") then
+            PasteNG:Print(L["Please enter import data"])
+            return
+        end
+
+        local success, result = DBModule:ImportAllPastes(importData:match("^%s*(.-)%s*$") or importData)
+
+        if success then
+            PasteNG:Print(string.format(L["Successfully imported %d pastes"], result))
+
+            -- Refresh the main dialog buttons if it's open
+            if DialogModule.PasteDialog and DialogModule.PasteDialog:IsShown() then
+                DialogModule:RefreshLoadDeleteButtons()
+                DialogModule:RefreshExportButton()
+            end
+        else
+            PasteNG:Print(L["Failed to import pastes:"] .. " " .. (result or L["Unknown error"]))
+        end
+    end,
+    EditBoxOnEnterPressed = function(self)
+        getglobal(self:GetParent():GetName() .. "Button1"):Click()
+    end,
+    EditBoxOnTextChanged = function(self)
+        local editBox = getglobal(self:GetParent():GetName() .. "EditBox")
+        local text = editBox:GetText()
+
+        if #text > 0 then
+            getglobal(self:GetParent():GetName() .. "Button1"):Enable()
+        else
+            getglobal(self:GetParent():GetName() .. "Button1"):Disable()
+        end
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_IMPORT_CONFIRM"] = {
+    text = L["This will replace the current text. Continue?"],
+    button1 = ACCEPT,
+    button2 = CANCEL,
+    OnAccept = function(self, data)
+        -- Clear text and show import instructions
+        DialogModule.TextBox:SetText("")
+        DialogModule.TextBox:SetFocus()
+        PasteNG:Print(L["Paste your export data into the text box, then click Import again to process it."])
     end,
     timeout = 0,
     whileDead = true,

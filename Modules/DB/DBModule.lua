@@ -110,6 +110,50 @@ do
     function DBModule:DeletePaste(name)
         self:GetProfile().savedPastes[name] = nil
     end
+
+    function DBModule:ExportAllPastes()
+        local pastes = {}
+        local profile = self:GetProfile()
+
+        for name, encodedText in pairs(profile.savedPastes) do
+            -- Decode the saved paste and re-encode it for export
+            local decodedText = base64_dec(encodedText)
+            pastes[name] = decodedText
+        end
+
+        local AceSerializer = LibStub("AceSerializer-3.0")
+        local serializedData = AceSerializer:Serialize(pastes)
+        return base64_enc(serializedData)
+    end
+
+    function DBModule:ImportAllPastes(importData)
+        local AceSerializer = LibStub("AceSerializer-3.0")
+
+        -- Decode the base64 data
+        local decodedData = base64_dec(importData)
+        if not decodedData or decodedData == "" then
+            return false, "Invalid import data"
+        end
+
+        -- Deserialize the data
+        local success, pastes = AceSerializer:Deserialize(decodedData)
+        if not success or type(pastes) ~= "table" then
+            return false, "Failed to parse import data"
+        end
+
+        local importCount = 0
+        local profile = self:GetProfile()
+
+        -- Import each paste
+        for name, text in pairs(pastes) do
+            if type(name) == "string" and type(text) == "string" and name ~= "" then
+                profile.savedPastes[name] = base64_enc(text)
+                importCount = importCount + 1
+            end
+        end
+
+        return true, importCount
+    end
 end
 
 do
