@@ -62,7 +62,7 @@ do
         else
             -- Show config dialog
             ConfigModule = ConfigModule or PasteNG:GetModule("ConfigModule")
-            Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
+            Settings.OpenToCategory(ConfigModule.CategoryId)
         end
     end
 

@@ -924,7 +924,7 @@ function DialogModule:HandleChatCommand(message)
     if method == "show" then
         self:ShowDialog()
     elseif method == "config" then
-        Settings.OpenToCategory(ConfigModule.OptionsFrame.name)
+        Settings.OpenToCategory(ConfigModule.CategoryId)
     elseif method == "minimap" then
         MinimapModule:ToggleMinimapIcon()
     elseif method == "send" then
