@@ -887,6 +887,8 @@ function PrintUsage()
     PasteNG:Print(L["/pasteng show - Show the pasteng dialog"])
     PasteNG:Print(L["/pasteng config - Open the configuration"])
     PasteNG:Print(L["/pasteng minimap - Toggle the minimap icon"])
+    PasteNG:Print(L["/pasteng import - Open the import dialog"])
+    PasteNG:Print(L["/pasteng export - Open the export dialog"])
     PasteNG:Print(L["/pasteng send Saved Paste name - Send a save paste to the default channel"])
     PasteNG:Print(L["/pasteng send Saved Paste name channel - Send a save paste to a specific channel"])
 end
@@ -927,6 +929,14 @@ function DialogModule:HandleChatCommand(message)
         Settings.OpenToCategory(ConfigModule.CategoryId)
     elseif method == "minimap" then
         MinimapModule:ToggleMinimapIcon()
+    elseif method == "import" then
+        self:ShowImportDialog()
+    elseif method == "export" then
+        if not DBModule:AnySavedPastes() then
+            PasteNG:Print(L["No pastes to export"])
+            return
+        end
+        self:ShowExportDialog()
     elseif method == "send" then
         if #parameters < 2 or #parameters > 3 then
             PrintUsage()

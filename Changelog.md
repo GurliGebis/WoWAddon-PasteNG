@@ -1,3 +1,6 @@
+# 11.2.7-20251218-1
+* Add slash commands for import/export
+
 # 11.2.7-20251210-1
 * Updated TOC for Mop Classic.
 
