@@ -280,20 +280,39 @@ do
         local function SendChatMessageWrapper(message, chatType, target)
             if chatType == CHAT_DEFAULT then
                 -- We cannot post directly to the default (currently selected) chat, so we have to do a little "macro" work.
-                -- Open the current chat window.
-                ChatFrame_OpenChat("")
+                if ChatFrameUtil.OpenChat then
+                    -- Midnight Pre-Patch and later
+                    -- Open the current chat window.
+                    ChatFrameUtil.OpenChat("")
 
-                -- Get the current chat window text box.
-                local edit = ChatEdit_GetActiveWindow()
+                    -- Get the current chat window text box.
+                    local edit = ChatFrameUtil.GetActiveWindow()
 
-                -- Set the text we want to send into the text box.
-                edit:SetText(message)
+                    -- Set the text we want to send into the text box.
+                    edit:SetText(message)
 
-                -- Send the message.
-                ChatEdit_SendText(edit, 1)
+                    -- Send the message.
+                    ChatFrameEditBoxMixin.SendText(edit, 1)
 
-                -- Close the chat window again.
-                ChatEdit_DeactivateChat(edit)
+                    -- Close the chat window again.
+                    ChatFrameUtil.DeactivateChat(edit)
+                else
+                    -- Legacy
+                    -- Open the current chat window.
+                    ChatFrame_OpenChat("")
+
+                    -- Get the current chat window text box.
+                    local edit = ChatEdit_GetActiveWindow()
+
+                    -- Set the text we want to send into the text box.
+                    edit:SetText(message)
+
+                    -- Send the message.
+                    ChatEdit_SendText(edit, 1)
+
+                    -- Close the chat window again.
+                    ChatEdit_DeactivateChat(edit)
+                end
             elseif chatType == BN_WHISPER then
                 local bnetAccountID = BNet_GetBNetIDAccount(target)
 
@@ -302,7 +321,13 @@ do
                     return
                 end
 
-                BNSendWhisper(bnetAccountID, message)
+                if C_BattleNet.SendWhisper then
+                    -- Midnight Pre-Patch and later
+                    C_BattleNet.SendWhisper(bnetAccountID, message)
+                else
+                    -- Legacy
+                    BNSendWhisper(bnetAccountID, message)
+                end
             else
                 InternalSendChatMessageWrapper(message, chatType, target)
             end

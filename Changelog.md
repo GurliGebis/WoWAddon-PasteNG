@@ -1,3 +1,6 @@
+# 12.0.0-20260121-1
+* Midnight API changes.
+
 # 11.2.7-20260113-1
 * Updated file headers.
 
