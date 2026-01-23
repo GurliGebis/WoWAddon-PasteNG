@@ -1,3 +1,6 @@
+# 12.0.0-20260123-1
+* Added ability to paste lines in reverse order by holding down SHIFT.
+
 # 12.0.0-20260121-1
 * Midnight API changes.
 * Updated TOC to Midnight Pre-Patch.

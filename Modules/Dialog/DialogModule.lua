@@ -377,6 +377,17 @@ do
         -- Split the message into lines.
         local lines = { strsplit("\n", message) }
 
+        -- Reverse the order of lines if shift key is held down
+        if IsShiftKeyDown() then
+            local reversedLines = {}
+
+            for i = #lines, 1, -1 do
+                table.insert(reversedLines, lines[i])
+            end
+
+            lines = reversedLines
+        end
+
         -- Define delay to use for pasting into guild chat.
         local delay = 0
 
