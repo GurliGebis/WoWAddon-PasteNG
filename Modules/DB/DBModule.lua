@@ -30,6 +30,7 @@ local defaultOptions = {
         selected_target = CHAT_DEFAULT,
         selected_target_name = "",
         shift_enter_send = "false",
+        ignore_comment_lines = "true",
         enable_sharing = "true",
         disable_announcements = "false"
     }

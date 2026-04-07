@@ -93,13 +93,25 @@ local options = {
                 DBModule:SetValue("shift_enter_send", val)
             end
         },
-        positionsHeader = {
+        ignoreCommentLines = {
             order = 5,
+            type = "toggle",
+            name = L["Ignore Comment Lines"],
+            desc = L["Lines starting with ## will be treated as comments and will not be sent"],
+            get = function()
+                return DBModule:GetValue("ignore_comment_lines")
+            end,
+            set = function(_, val)
+                DBModule:SetValue("ignore_comment_lines", val)
+            end
+        },
+        positionsHeader = {
+            order = 6,
             name = L["Positions and coordinates"],
             type = "header"
         },
         resetCoordinates = {
-            order = 6,
+            order = 7,
             type = "execute",
             width = "double",
             name = L["Reset window size and position"],
@@ -110,12 +122,12 @@ local options = {
             end
         },
         keyBindings = {
-            order = 7,
+            order = 8,
             name = KEY_BINDINGS,
             type = "header"
         },
         showWindowKeyBinding = {
-            order = 8,
+            order = 9,
             type = "keybinding",
             width = "double",
             name = L["Open the PasteNG window"],
@@ -128,17 +140,17 @@ local options = {
             end
         },
         sharingHeader = {
-            order = 9,
+            order = 10,
             name = L["Sharing"],
             type = "header"
         },
         sharingDescription = {
-            order = 10,
+            order = 11,
             name = L["Sharing with party / raid members"],
             type = "description"
         },
         enableSharing = {
-            order = 11,
+            order = 12,
             type = "toggle",
             width = "double",
             name = L["Enable sharing with party / raid members"],
@@ -151,7 +163,7 @@ local options = {
             end
         },
         disableAnnouncements = {
-            order = 12,
+            order = 13,
             type = "toggle",
             width = "double",
             name = L["Disable announcements"],

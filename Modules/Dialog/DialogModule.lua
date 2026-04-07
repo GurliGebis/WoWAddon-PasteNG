@@ -388,6 +388,19 @@ do
             lines = reversedLines
         end
 
+        -- Filter out comment lines (lines starting with ##) if the setting is enabled
+        if DBModule:GetValue("ignore_comment_lines") then
+            local filteredLines = {}
+
+            for _, line in ipairs(lines) do
+                if not line:find("^##") then
+                    table.insert(filteredLines, line)
+                end
+            end
+
+            lines = filteredLines
+        end
+
         -- Define delay to use for pasting into guild chat.
         local delay = 0
 

@@ -1,3 +1,6 @@
+# 12.0.1-20260407-1
+* Lines starting with ## are now treated as comments and skipped when sending.
+
 # 12.0.1-20260211-1
 * Updated TOC to Midnight Pre-Patch.
 
