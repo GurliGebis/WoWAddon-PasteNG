@@ -1,3 +1,6 @@
+# 12.0.5-20260421-1
+* Updated TOC to match WoW 12.0.5
+
 # 12.0.1-20260407-1
 * Lines starting with ## are now treated as comments and skipped when sending.
 
