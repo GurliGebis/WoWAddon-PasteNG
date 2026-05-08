@@ -60,6 +60,14 @@ local function GetPartyMembers()
     return result
 end
 
+local function DoPasteSave(name, data)
+    DBModule:SavePaste(name, data)
+    DialogModule.CurrentPasteName = name
+    DialogModule:UpdateTitle()
+    DialogModule:RefreshLoadDeleteButtons()
+    DialogModule:RefreshExportButton()
+end
+
 do
     local isPastedAllowed = false
     local hasShownUpdateNotification = false
@@ -133,14 +141,26 @@ do
         if charCount > 0 then
             lineCount = lineCount + 1
             DialogModule.SaveButton:Enable()
+            DialogModule.SaveAsButton:Enable()
             DialogModule.ClearButton:Enable()
         else
             DialogModule.SaveButton:Disable()
+            DialogModule.SaveAsButton:Disable()
             DialogModule.ClearButton:Disable()
         end
 
         -- Set the footer status text.
         DialogModule.PasteDialog:SetStatusText(string.format("%d %s, %d %s", lineCount, L["lines"], charCount, L["characters"]))
+    end
+
+    function DialogModule:UpdateTitle()
+        local baseTitle = string.format("%s %s", PasteNG.Name, PasteNG.Version)
+
+        if DialogModule.CurrentPasteName then
+            DialogModule.PasteDialog:SetTitle(string.format("%s - %s", baseTitle, DialogModule.CurrentPasteName))
+        else
+            DialogModule.PasteDialog:SetTitle(baseTitle)
+        end
     end
 
     local function RefreshTargetDropdown(dropdown)
@@ -441,6 +461,8 @@ do
             if text then
                 DialogModule.TextBox:SetText(text)
                 DialogModule:UpdateFooter()
+                DialogModule.CurrentPasteName = name
+                DialogModule:UpdateTitle()
             end
         end
 
@@ -460,6 +482,14 @@ do
     end
 
     local function SaveButton_OnClick()
+        if DialogModule.CurrentPasteName then
+            DoPasteSave(DialogModule.CurrentPasteName, DialogModule.TextBox:GetText())
+        else
+            StaticPopup_Show("PASTENG_SAVE", nil, nil, DialogModule.TextBox:GetText())
+        end
+    end
+
+    local function SaveAsButton_OnClick()
         StaticPopup_Show("PASTENG_SAVE", nil, nil, DialogModule.TextBox:GetText())
     end
 
@@ -482,6 +512,8 @@ do
         DialogModule.TextBox:SetText("")
         DialogModule:UpdateFooter()
         DialogModule.TextBox:SetFocus()
+        DialogModule.CurrentPasteName = nil
+        DialogModule:UpdateTitle()
 
         DialogModule:RefreshPasteCloseButtons()
         DialogModule:RefreshShareButton()
@@ -762,7 +794,8 @@ do
         local mainFrame = CreateMainFrame()
         local loadButton = CreateButton(mainFrame.frame, mainFrame.frame, L["Load"], rightButtonsWidth, 24, "TOPRIGHT", -27, -27)
         local saveButton = CreateButton(mainFrame.frame, loadButton, L["Save"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
-        local deleteButton = CreateButton(mainFrame.frame, saveButton, L["Delete"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
+        local saveAsButton = CreateButton(mainFrame.frame, saveButton, L["Save As"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
+        local deleteButton = CreateButton(mainFrame.frame, saveAsButton, L["Delete"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local clearButton = CreateButton(mainFrame.frame, deleteButton, L["Clear"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local shareButton = CreateButton(mainFrame.frame, clearButton, L["Share"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
         local exportButton = CreateButton(mainFrame.frame, shareButton, L["Export"], rightButtonsWidth, 24, "TOPRIGHT", 0, -24)
@@ -775,6 +808,7 @@ do
         -- Store controls on the module
         DialogModule.LoadButton = loadButton
         DialogModule.SaveButton = saveButton
+        DialogModule.SaveAsButton = saveAsButton
         DialogModule.DeleteButton = deleteButton
         DialogModule.ClearButton = clearButton
         DialogModule.ShareButton = shareButton
@@ -790,6 +824,7 @@ do
         -- Attach event handlers
         loadButton:SetScript("OnClick", LoadButton_OnClick)
         saveButton:SetScript("OnClick", SaveButton_OnClick)
+        saveAsButton:SetScript("OnClick", SaveAsButton_OnClick)
         deleteButton:SetScript("OnClick", DeleteButton_OnClick)
         clearButton:SetScript("OnClick", ClearButton_OnClick)
         shareButton:SetScript("OnClick", ShareButton_OnClick)
@@ -1011,12 +1046,6 @@ function DialogModule:HandleChatCommand(message)
     end
 end
 
-local function DoPasteSave(name, data)
-    DBModule:SavePaste(name, data)
-    DialogModule:RefreshLoadDeleteButtons()
-    DialogModule:RefreshExportButton()
-end
-
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     text = "",
     button1 = "Yes",
@@ -1025,6 +1054,11 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
         DBModule:DeletePaste(data)
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshExportButton()
+
+        if DialogModule.CurrentPasteName == data then
+            DialogModule.CurrentPasteName = nil
+            DialogModule:UpdateTitle()
+        end
     end,
     enterClicksFirstButton = true,
     timeout = 0,

@@ -1,3 +1,6 @@
+# 12.0.5-20260508-1
+* Change Save to work more like documents and add "Save As"
+
 # 12.0.5-20260421-1
 * Updated TOC to match WoW 12.0.5
 
