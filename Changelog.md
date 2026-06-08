@@ -2,6 +2,7 @@
 * Confirm before overwriting when clicking Save on a loaded paste.
 * Skip the overwrite prompt if the paste content is unchanged.
 * Add soft-delete with 30-day recycle bin for pastes.
+* Updated TOC for Mop Classic.
 
 # 12.0.5-20260508-1
 * Change Save to work more like documents and add "Save As"
