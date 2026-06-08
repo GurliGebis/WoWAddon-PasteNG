@@ -63,6 +63,8 @@ end
 local function DoPasteSave(name, data)
     DBModule:SavePaste(name, data)
     DialogModule.CurrentPasteName = name
+    DialogModule.CurrentPasteIsDeleted = false
+    DialogModule.TextBox.editBox:SetEnabled(true)
     DialogModule:UpdateTitle()
     DialogModule:RefreshLoadDeleteButtons()
     DialogModule:RefreshExportButton()
@@ -140,8 +142,12 @@ do
         -- So if no text, we have 0 lines, but if we have any, we add 1, since there are no linebreak in front of the first line.
         if charCount > 0 then
             lineCount = lineCount + 1
-            DialogModule.SaveButton:Enable()
-            DialogModule.SaveAsButton:Enable()
+
+            if not DialogModule.CurrentPasteIsDeleted then
+                DialogModule.SaveButton:Enable()
+                DialogModule.SaveAsButton:Enable()
+            end
+
             DialogModule.ClearButton:Enable()
         else
             DialogModule.SaveButton:Disable()
@@ -157,7 +163,11 @@ do
         local baseTitle = string.format("%s %s", PasteNG.Name, PasteNG.Version)
 
         if DialogModule.CurrentPasteName then
-            DialogModule.PasteDialog:SetTitle(string.format("%s - %s", baseTitle, DialogModule.CurrentPasteName))
+            if DialogModule.CurrentPasteIsDeleted then
+                DialogModule.PasteDialog:SetTitle(string.format("%s - %s [%s]", baseTitle, DialogModule.CurrentPasteName, L["Deleted"]))
+            else
+                DialogModule.PasteDialog:SetTitle(string.format("%s - %s", baseTitle, DialogModule.CurrentPasteName))
+            end
         else
             DialogModule.PasteDialog:SetTitle(baseTitle)
         end
@@ -219,13 +229,25 @@ do
 
     function DialogModule:RefreshLoadDeleteButtons()
         local anySavedPastes = DBModule:AnySavedPastes()
+        local anyDeletedPastes = DBModule:AnyDeletedPastes()
 
-        if anySavedPastes then
+        if anySavedPastes or anyDeletedPastes then
             DialogModule.LoadButton:Enable()
-            DialogModule.DeleteButton:Enable()
         else
             DialogModule.LoadButton:Disable()
-            DialogModule.DeleteButton:Disable()
+        end
+
+        if DialogModule.CurrentPasteIsDeleted then
+            DialogModule.DeleteButton:SetText(L["Undelete"])
+            DialogModule.DeleteButton:Enable()
+        else
+            DialogModule.DeleteButton:SetText(L["Delete"])
+
+            if anySavedPastes then
+                DialogModule.DeleteButton:Enable()
+            else
+                DialogModule.DeleteButton:Disable()
+            end
         end
     end
 
@@ -455,35 +477,82 @@ do
     end
 
     local function LoadButton_OnClick()
-        local function LoadPaste(name)
-            local text = DBModule:LoadPaste(name)
+        local function LoadPaste(name, isDeleted)
+            local text
+
+            if isDeleted then
+                text = DBModule:LoadDeletedPaste(name)
+            else
+                text = DBModule:LoadPaste(name)
+            end
 
             if text then
                 DialogModule.TextBox:SetText(text)
-                DialogModule:UpdateFooter()
                 DialogModule.CurrentPasteName = name
+                DialogModule.CurrentPasteIsDeleted = isDeleted
+
+                if isDeleted then
+                    DialogModule.TextBox.editBox:SetEnabled(false)
+                else
+                    DialogModule.TextBox.editBox:SetEnabled(true)
+                end
+
+                DialogModule:UpdateFooter()
                 DialogModule:UpdateTitle()
+                DialogModule:RefreshLoadDeleteButtons()
             end
         end
 
         MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
-            rootDescription:CreateTitle(L["Select paste to load"])
-
             EnableMenuScrolling(rootDescription)
 
-            for _, savedPaste in ipairs(DBModule:ListSavedPastes()) do
-                rootDescription:CreateButton(savedPaste, function()
-                    LoadPaste(savedPaste)
+            local savedPastes = DBModule:ListSavedPastes()
 
-                    DialogModule:RefreshPasteCloseButtons()
-                end)
+            if #savedPastes > 0 then
+                rootDescription:CreateTitle(L["Select paste to load"])
+
+                for _, savedPaste in ipairs(savedPastes) do
+                    rootDescription:CreateButton(savedPaste, function()
+                        LoadPaste(savedPaste, false)
+                        DialogModule:RefreshPasteCloseButtons()
+                    end)
+                end
+            end
+
+            local deletedPastes = DBModule:ListDeletedPastes()
+
+            if #deletedPastes > 0 then
+                rootDescription:CreateTitle(L["Deleted pastes"])
+
+                for _, deletedPaste in ipairs(deletedPastes) do
+                    rootDescription:CreateButton(deletedPaste, function()
+                        LoadPaste(deletedPaste, true)
+                        DialogModule:RefreshPasteCloseButtons()
+                    end)
+                end
             end
         end)
     end
 
+    local function HasPasteChanged()
+        if not DialogModule.CurrentPasteName then
+            return true
+        end
+
+        if DialogModule.CurrentPasteIsDeleted then
+            return DialogModule.TextBox:GetText() ~= DBModule:LoadDeletedPaste(DialogModule.CurrentPasteName)
+        end
+
+        return DialogModule.TextBox:GetText() ~= DBModule:LoadPaste(DialogModule.CurrentPasteName)
+    end
+
     local function SaveButton_OnClick()
         if DialogModule.CurrentPasteName then
-            DoPasteSave(DialogModule.CurrentPasteName, DialogModule.TextBox:GetText())
+            if not HasPasteChanged() then
+                return
+            end
+
+            StaticPopup_Show("PASTENG_WARN_OVERWRITE", nil, nil, { DialogModule.CurrentPasteName, DialogModule.TextBox:GetText() })
         else
             StaticPopup_Show("PASTENG_SAVE", nil, nil, DialogModule.TextBox:GetText())
         end
@@ -494,6 +563,23 @@ do
     end
 
     local function DeleteButton_OnClick()
+        if DialogModule.CurrentPasteIsDeleted then
+            local newName = DBModule:UndeletePaste(DialogModule.CurrentPasteName)
+
+            if not newName then
+                return
+            end
+
+            DialogModule.CurrentPasteName = newName
+            DialogModule.CurrentPasteIsDeleted = false
+            DialogModule.TextBox.editBox:SetEnabled(true)
+            DialogModule:UpdateTitle()
+            DialogModule:UpdateFooter()
+            DialogModule:RefreshLoadDeleteButtons()
+            DialogModule:RefreshExportButton()
+            return
+        end
+
         MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
             rootDescription:CreateTitle(L["Select paste to delete"])
 
@@ -508,15 +594,21 @@ do
         end)
     end
 
-    local function ClearButton_OnClick()
+    function DialogModule:DoClear()
         DialogModule.TextBox:SetText("")
-        DialogModule:UpdateFooter()
-        DialogModule.TextBox:SetFocus()
         DialogModule.CurrentPasteName = nil
+        DialogModule.CurrentPasteIsDeleted = false
+        DialogModule.TextBox.editBox:SetEnabled(true)
+        DialogModule:UpdateFooter()
         DialogModule:UpdateTitle()
-
+        DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshPasteCloseButtons()
         DialogModule:RefreshShareButton()
+    end
+
+    local function ClearButton_OnClick()
+        DialogModule:DoClear()
+        DialogModule.TextBox:SetFocus()
     end
 
     local function ShareButton_OnClick()
@@ -869,6 +961,9 @@ do
             self:CreateDialog()
         end
 
+        DBModule:PruneDeletedPastes()
+        DialogModule:RefreshLoadDeleteButtons()
+
         DialogModule.PasteDialog:Show()
         DialogModule.TextBox:SetFocus()
 
@@ -1051,13 +1146,13 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     button1 = "Yes",
     button2 = "No",
     OnAccept = function(self, data)
-        DBModule:DeletePaste(data)
+        local deletedName = DBModule:SoftDeletePaste(data)
+
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshExportButton()
 
         if DialogModule.CurrentPasteName == data then
-            DialogModule.CurrentPasteName = nil
-            DialogModule:UpdateTitle()
+            DialogModule:DoClear()
         end
     end,
     enterClicksFirstButton = true,
@@ -1155,6 +1250,9 @@ StaticPopupDialogs["PASTENG_SHARE_CONFIRM"] = {
     OnAccept = function(self, data)
         -- Show the dialog and set the text box to the received paste.
         DialogModule:ShowDialog()
+        DialogModule.CurrentPasteName = nil
+        DialogModule.CurrentPasteIsDeleted = false
+        DialogModule.TextBox.editBox:SetEnabled(true)
         DialogModule.TextBox:SetText(data)
         DialogModule:UpdateFooter()
 
