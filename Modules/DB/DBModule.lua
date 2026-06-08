@@ -27,6 +27,7 @@ local defaultOptions = {
             hide = false
         },
         savedPastes = {},
+        deletedPastes = {},
         selected_target = CHAT_DEFAULT,
         selected_target_name = "",
         shift_enter_send = "false",
@@ -37,6 +38,29 @@ local defaultOptions = {
 }
 
 do
+    local letters = "abcdefghijklmnopqrstuvwxyz"
+
+    local function GenerateUniqueName(baseName, existsFunc)
+        if not existsFunc(baseName) then
+            return baseName
+        end
+
+        local name
+
+        repeat
+            local suffix = ""
+
+            for _ = 1, 5 do
+                local index = math.random(1, #letters)
+                suffix = suffix .. string.sub(letters, index, index)
+            end
+
+            name = baseName .. "-" .. suffix
+        until not existsFunc(name)
+
+        return name
+    end
+
     function DBModule:OnInitialize()
         self.AceDB = LibStub("AceDB-3.0"):New("PasteNGDB", defaultOptions, true)
 
@@ -112,6 +136,92 @@ do
         self:GetProfile().savedPastes[name] = nil
     end
 
+    function DBModule:SoftDeletePaste(name)
+        local profile = self:GetProfile()
+        local encoded = profile.savedPastes[name]
+
+        if not encoded then
+            return nil
+        end
+
+        local deletedName = GenerateUniqueName(name, function(n)
+            return profile.deletedPastes[n] ~= nil
+        end)
+
+        profile.deletedPastes[deletedName] = {
+            data = encoded,
+            deletedAt = time()
+        }
+
+        profile.savedPastes[name] = nil
+
+        return deletedName
+    end
+
+    function DBModule:AnyDeletedPastes()
+        for _ in pairs(self:GetProfile().deletedPastes) do
+            return true
+        end
+
+        return false
+    end
+
+    function DBModule:ListDeletedPastes()
+        local result = {}
+
+        for k in pairs(self:GetProfile().deletedPastes) do
+            result[#result+1] = k
+        end
+
+        table.sort(result)
+
+        return result
+    end
+
+    function DBModule:LoadDeletedPaste(name)
+        local entry = self:GetProfile().deletedPastes[name]
+
+        if not entry then
+            return nil
+        end
+
+        return base64_dec(entry.data)
+    end
+
+    function DBModule:UndeletePaste(name)
+        local profile = self:GetProfile()
+        local entry = profile.deletedPastes[name]
+
+        if not entry then
+            return nil
+        end
+
+        local savedName = GenerateUniqueName(name, function(n)
+            return profile.savedPastes[n] ~= nil
+        end)
+
+        profile.savedPastes[savedName] = entry.data
+        profile.deletedPastes[name] = nil
+
+        return savedName
+    end
+
+    function DBModule:PruneDeletedPastes()
+        local profile = self:GetProfile()
+        local cutoff = time() - (30 * 24 * 60 * 60)
+        local toRemove = {}
+
+        for name, entry in pairs(profile.deletedPastes) do
+            if entry.deletedAt < cutoff then
+                toRemove[#toRemove+1] = name
+            end
+        end
+
+        for _, name in ipairs(toRemove) do
+            profile.deletedPastes[name] = nil
+        end
+    end
+
     function DBModule:ExportAllPastes()
         local pastes = {}
         local profile = self:GetProfile()
@@ -177,12 +287,23 @@ do
         return GetDataVersion(profile)
     end
 
+    local function MigrateDeletedPastes(profile)
+        profile.deletedPastes = profile.deletedPastes or {}
+
+        profile.dataVersion = 2
+        return GetDataVersion(profile)
+    end
+
     function DBModule:MigrateProfile()
         local profile = self:GetProfile()
         local version = GetDataVersion(profile)
 
         if version < 1 then
             version = MigrateMinimapIcon(profile)
+        end
+
+        if version < 2 then
+            version = MigrateDeletedPastes(profile)
         end
     end
 end
