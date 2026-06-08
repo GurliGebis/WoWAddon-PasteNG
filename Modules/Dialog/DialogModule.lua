@@ -483,7 +483,7 @@ do
 
     local function SaveButton_OnClick()
         if DialogModule.CurrentPasteName then
-            DoPasteSave(DialogModule.CurrentPasteName, DialogModule.TextBox:GetText())
+            StaticPopup_Show("PASTENG_WARN_OVERWRITE", nil, nil, { DialogModule.CurrentPasteName, DialogModule.TextBox:GetText() })
         else
             StaticPopup_Show("PASTENG_SAVE", nil, nil, DialogModule.TextBox:GetText())
         end
