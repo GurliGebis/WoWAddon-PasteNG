@@ -481,8 +481,20 @@ do
         end)
     end
 
+    local function HasPasteChanged()
+        if not DialogModule.CurrentPasteName then
+            return true
+        end
+
+        return DialogModule.TextBox:GetText() ~= DBModule:LoadPaste(DialogModule.CurrentPasteName)
+    end
+
     local function SaveButton_OnClick()
         if DialogModule.CurrentPasteName then
+            if not HasPasteChanged() then
+                return
+            end
+
             StaticPopup_Show("PASTENG_WARN_OVERWRITE", nil, nil, { DialogModule.CurrentPasteName, DialogModule.TextBox:GetText() })
         else
             StaticPopup_Show("PASTENG_SAVE", nil, nil, DialogModule.TextBox:GetText())

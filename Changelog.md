@@ -1,5 +1,6 @@
 # 12.0.5-20260608-1
 * Confirm before overwriting when clicking Save on a loaded paste.
+* Skip the overwrite prompt if the paste content is unchanged.
 
 # 12.0.5-20260508-1
 * Change Save to work more like documents and add "Save As"
