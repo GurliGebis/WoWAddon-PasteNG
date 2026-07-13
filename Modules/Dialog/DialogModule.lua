@@ -178,7 +178,6 @@ do
 
         -- Default targets, always there.
         local targets = {
-            [CHAT_DEFAULT] = CHAT_DEFAULT,
             [CHAT_MSG_SAY] = CHAT_MSG_SAY,
             [CHAT_MSG_YELL] = CHAT_MSG_YELL,
             [CHAT_MSG_WHISPER_INFORM] = CHAT_MSG_WHISPER_INFORM,
@@ -216,9 +215,9 @@ do
             targetDropdown:SetList(targets)
 
             -- Set the current target to the one stored in the settings.
-            -- If the one stored in the settings isn't available, we default to the default chat.
+            -- If the one stored in the settings isn't available, we default to SAY.
             local previousSelectedTarget = DBModule:GetValue("selected_target")
-            local targetValue = targets[previousSelectedTarget] and previousSelectedTarget or CHAT_DEFAULT
+            local targetValue = targets[previousSelectedTarget] and previousSelectedTarget or CHAT_MSG_SAY
 
             targetDropdown:SetValue(targetValue)
             DBModule:SetValue("selected_target", targetValue)
@@ -1102,7 +1101,7 @@ function DialogModule:HandleChatCommand(message)
         end
 
         local text = DBModule:LoadPaste(parameters[2])
-        local channel = parameters[3] or CHAT_DEFAULT
+        local channel = parameters[3] or CHAT_MSG_SAY
 
         if not text then
             PasteNG:Print(L["Saved paste not found"])
