@@ -1,3 +1,7 @@
+# 12.0.7-20260713-1
+* Replace CHAT_DEFAULT edit-box path with ExecuteSlashCommand dispatch.
+* Remove CHAT_DEFAULT target from dropdown, default to SAY.
+
 # 12.0.7-20260617-1
 * Updated TOC to match 12.0.7
 
