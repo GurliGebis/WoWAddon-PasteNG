@@ -1,3 +1,6 @@
+# 12.0.7-20260713-1
+* Replace CHAT_DEFAULT edit-box path with ExecuteSlashCommand dispatch.
+
 # 12.0.7-20260617-1
 * Updated TOC to match 12.0.7
 

@@ -309,6 +309,20 @@ do
         end
     end
 
+    local function ExecuteSlashCommand(text)
+        local cmd, args = text:match("^(/[^%s]+)%s*(.*)")
+        if not cmd then return end
+        cmd = strupper(cmd)
+
+        -- Ensure hash_SlashCmdList is up to date (lazily populated by Blizzard)
+        ChatFrameUtil.ImportAllListsToHash()
+
+        local handler = hash_SlashCmdList[cmd]
+        if handler then
+            handler(strtrim(args))
+        end
+    end
+
     local function InternalSendChatMessageWrapper(message, chatType, target)
         if C_ChatInfo.SendChatMessage then
             C_ChatInfo.SendChatMessage(message, chatType, nil, target)
@@ -320,42 +334,7 @@ do
     function DialogModule:SendPaste(text, target)
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
-            if chatType == CHAT_DEFAULT then
-                -- We cannot post directly to the default (currently selected) chat, so we have to do a little "macro" work.
-                if ChatFrameUtil.OpenChat then
-                    -- Midnight Pre-Patch and later
-                    -- Open the current chat window.
-                    ChatFrameUtil.OpenChat("")
-
-                    -- Get the current chat window text box.
-                    local edit = ChatFrameUtil.GetActiveWindow()
-
-                    -- Set the text we want to send into the text box.
-                    edit:SetText(message)
-
-                    -- Send the message.
-                    ChatFrameEditBoxMixin.SendText(edit, 1)
-
-                    -- Close the chat window again.
-                    ChatFrameUtil.DeactivateChat(edit)
-                else
-                    -- Legacy
-                    -- Open the current chat window.
-                    ChatFrame_OpenChat("")
-
-                    -- Get the current chat window text box.
-                    local edit = ChatEdit_GetActiveWindow()
-
-                    -- Set the text we want to send into the text box.
-                    edit:SetText(message)
-
-                    -- Send the message.
-                    ChatEdit_SendText(edit, 1)
-
-                    -- Close the chat window again.
-                    ChatEdit_DeactivateChat(edit)
-                end
-            elseif chatType == BN_WHISPER then
+            if chatType == BN_WHISPER then
                 local bnetAccountID = BNet_GetBNetIDAccount(target)
 
                 if not bnetAccountID then
@@ -454,8 +433,8 @@ do
 
             for _, splitLine in ipairs(splitLines) do
                 if splitLine:find("^/%w") then
-                    -- The current line starts with a forward slash, so we send it to the DEFAULT channel.
-                    SendChatMessageWrapper(splitLine, CHAT_DEFAULT)
+                    -- The current line starts with a forward slash, so execute it as a slash command.
+                    ExecuteSlashCommand(splitLine)
                 elseif selectedTarget ~= CHAT_MSG_GUILD then
                     SendChatMessageWrapper(splitLine, selectedTarget, target)
                 else
