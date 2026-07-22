@@ -508,6 +508,12 @@ do
                         DialogModule:RefreshPasteCloseButtons()
                     end)
                 end
+
+                rootDescription:CreateTitle(L["Purge"])
+                rootDescription:CreateButton(L["Purge deleted pastes"], function()
+                    StaticPopupDialogs["PASTENG_CONFIRM_PURGE"].text = string.format(L["Do you want to permanently delete all %d deleted pastes? This cannot be undone."], #deletedPastes)
+                    StaticPopup_Show("PASTENG_CONFIRM_PURGE")
+                end)
             end
         end)
     end
@@ -1132,6 +1138,26 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
         if DialogModule.CurrentPasteName == data then
             DialogModule:DoClear()
         end
+    end,
+    enterClicksFirstButton = true,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["PASTENG_CONFIRM_PURGE"] = {
+    text = "",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function(self, data)
+        DBModule:PurgeAllDeletedPastes()
+
+        if DialogModule.CurrentPasteIsDeleted then
+            DialogModule:DoClear()
+        end
+
+        DialogModule:RefreshLoadDeleteButtons()
     end,
     enterClicksFirstButton = true,
     timeout = 0,

@@ -222,6 +222,10 @@ do
         end
     end
 
+    function DBModule:PurgeAllDeletedPastes()
+        self:GetProfile().deletedPastes = {}
+    end
+
     function DBModule:ExportAllPastes()
         local pastes = {}
         local profile = self:GetProfile()

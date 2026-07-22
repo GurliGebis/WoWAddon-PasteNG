@@ -1,3 +1,6 @@
+# 12.0.7-20260723-1
+* Add a "Purge deleted pastes" option to the Load menu to permanently remove all deleted pastes.
+
 # 12.0.7-20260713-1
 * Replace CHAT_DEFAULT edit-box path with ExecuteSlashCommand dispatch.
 * Remove CHAT_DEFAULT target from dropdown, default to SAY.
