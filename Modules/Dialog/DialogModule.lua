@@ -33,6 +33,20 @@ local messagePrefixes = {
     PASTENG_PRESENCE = "PASTENG_PRESENCE"
 }
 
+-- Actual chat type keywords accepted by SendChatMessage/C_ChatInfo.SendChatMessage.
+-- These must NOT be confused with the localized Blizzard globals (CHAT_MSG_SAY, CHAT_MSG_GUILD, etc.)
+-- which are only meant to be used as display labels in the UI.
+local CHAT_TYPE_SAY = "SAY"
+local CHAT_TYPE_YELL = "YELL"
+local CHAT_TYPE_PARTY = "PARTY"
+local CHAT_TYPE_GUILD = "GUILD"
+local CHAT_TYPE_OFFICER = "OFFICER"
+local CHAT_TYPE_RAID = "RAID"
+local CHAT_TYPE_RAID_WARNING = "RAID_WARNING"
+local CHAT_TYPE_INSTANCE_CHAT = "INSTANCE_CHAT"
+local CHAT_TYPE_WHISPER = "WHISPER"
+local CHAT_TYPE_BN_WHISPER = "BN_WHISPER"
+
 local function GetPartyMembers()
     local numberOfMembers = GetNumGroupMembers()
     local lookupType
@@ -177,37 +191,39 @@ do
         local targetDropdown = dropdown or DialogModule.TargetDropdown
 
         -- Default targets, always there.
+        -- NOTE: The keys are the actual chat type keywords accepted by SendChatMessage,
+        -- while the values are the localized Blizzard globals used only as display labels.
         local targets = {
-            [CHAT_MSG_SAY] = CHAT_MSG_SAY,
-            [CHAT_MSG_YELL] = CHAT_MSG_YELL,
-            [CHAT_MSG_WHISPER_INFORM] = CHAT_MSG_WHISPER_INFORM,
+            [CHAT_TYPE_SAY] = CHAT_MSG_SAY,
+            [CHAT_TYPE_YELL] = CHAT_MSG_YELL,
+            [CHAT_TYPE_WHISPER] = CHAT_MSG_WHISPER_INFORM,
         }
 
         -- Check and add optional targets
-        local function addTarget(condition, key)
+        local function addTarget(condition, key, label)
             if condition then
-                targets[key] = key
+                targets[key] = label
             end
         end
 
         -- Are we connected to battle net chat? (sometimes this goes offline, so better to check)
-        addTarget(BNFeaturesEnabledAndConnected(), BN_WHISPER)
+        addTarget(BNFeaturesEnabledAndConnected(), CHAT_TYPE_BN_WHISPER, BN_WHISPER)
 
         -- Are we in a group?
-        addTarget(GetNumGroupMembers() > 0, CHAT_MSG_PARTY)
+        addTarget(GetNumGroupMembers() > 0, CHAT_TYPE_PARTY, CHAT_MSG_PARTY)
 
         -- Are we in a raid?
-        addTarget(IsInRaid(), CHAT_MSG_RAID)
+        addTarget(IsInRaid(), CHAT_TYPE_RAID, CHAT_MSG_RAID)
 
         -- Are we are in a raid group, and are we the Leader or Assistant?
-        addTarget(IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")), CHAT_MSG_RAID_WARNING)
+        addTarget(IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")), CHAT_TYPE_RAID_WARNING, CHAT_MSG_RAID_WARNING)
 
         -- Are we in an instance? (dungeon, raid, scenario etc)
-        addTarget(IsInGroup(LE_PARTY_CATEGORY_INSTANCE), INSTANCE_CHAT)
+        addTarget(IsInGroup(LE_PARTY_CATEGORY_INSTANCE), CHAT_TYPE_INSTANCE_CHAT, INSTANCE_CHAT)
 
         -- Are we in a guild?
-        addTarget(IsInGuild(), CHAT_MSG_GUILD)
-        addTarget(IsInGuild(), CHAT_MSG_OFFICER)
+        addTarget(IsInGuild(), CHAT_TYPE_GUILD, CHAT_MSG_GUILD)
+        addTarget(IsInGuild(), CHAT_TYPE_OFFICER, CHAT_MSG_OFFICER)
 
         -- If the drop down isn't open, we can set the targets (we don't want to override it while it is open)
         if not targetDropdown.open then
@@ -217,7 +233,7 @@ do
             -- Set the current target to the one stored in the settings.
             -- If the one stored in the settings isn't available, we default to SAY.
             local previousSelectedTarget = DBModule:GetValue("selected_target")
-            local targetValue = targets[previousSelectedTarget] and previousSelectedTarget or CHAT_MSG_SAY
+            local targetValue = targets[previousSelectedTarget] and previousSelectedTarget or CHAT_TYPE_SAY
 
             targetDropdown:SetValue(targetValue)
             DBModule:SetValue("selected_target", targetValue)
@@ -282,7 +298,7 @@ do
 
         local selectedTarget = DBModule:GetValue("selected_target")
 
-        if selectedTarget == CHAT_MSG_WHISPER_INFORM or selectedTarget == BN_WHISPER then
+        if selectedTarget == CHAT_TYPE_WHISPER or selectedTarget == CHAT_TYPE_BN_WHISPER then
             local targetName = DBModule:GetValue("selected_whisper_target")
 
             if not targetName or targetName == "" then
@@ -333,7 +349,7 @@ do
     function DialogModule:SendPaste(text, target)
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
-            if chatType == BN_WHISPER then
+            if chatType == CHAT_TYPE_BN_WHISPER then
                 local bnetAccountID = BNet_GetBNetIDAccount(target)
 
                 if not bnetAccountID then
@@ -425,7 +441,7 @@ do
         local delay = 0
 
         -- Look up the target, if we are to whisper someone.
-        local target = (selectedTarget == BN_WHISPER or selectedTarget == CHAT_MSG_WHISPER_INFORM) and DBModule:GetValue("selected_whisper_target") or nil
+        local target = (selectedTarget == CHAT_TYPE_BN_WHISPER or selectedTarget == CHAT_TYPE_WHISPER) and DBModule:GetValue("selected_whisper_target") or nil
 
         for _, line in ipairs(lines) do
             local splitLines = SplitLineIfTooLong(line)
@@ -434,7 +450,7 @@ do
                 if splitLine:find("^/%w") then
                     -- The current line starts with a forward slash, so execute it as a slash command.
                     ExecuteSlashCommand(splitLine)
-                elseif selectedTarget ~= CHAT_MSG_GUILD then
+                elseif selectedTarget ~= CHAT_TYPE_GUILD then
                     SendChatMessageWrapper(splitLine, selectedTarget, target)
                 else
                     -- Guild chat has to use a delay for some reason.
@@ -744,7 +760,7 @@ do
     local function TargetDropdown_OnValueChanged(key, targetNameTextBox)
         DBModule:SetValue("selected_target", key)
 
-        if key == CHAT_MSG_WHISPER_INFORM or key == BN_WHISPER then
+        if key == CHAT_TYPE_WHISPER or key == CHAT_TYPE_BN_WHISPER then
             targetNameTextBox:SetDisabled(false)
             targetNameTextBox:SetFocus()
 
@@ -856,7 +872,7 @@ do
             targetNameTextBox:SetText(DBModule:GetValue("selected_whisper_target") or "")
 
             local previousSelectedTarget = DBModule:GetValue("selected_target")
-            targetNameTextBox:SetDisabled(previousSelectedTarget ~= CHAT_MSG_WHISPER_INFORM and previousSelectedTarget ~= BN_WHISPER)
+            targetNameTextBox:SetDisabled(previousSelectedTarget ~= CHAT_TYPE_WHISPER and previousSelectedTarget ~= CHAT_TYPE_BN_WHISPER)
 
             targetGroup:AddChild(targetDropdown)
             targetGroup:AddChild(targetNameTextBox)
@@ -1107,14 +1123,14 @@ function DialogModule:HandleChatCommand(message)
         end
 
         local text = DBModule:LoadPaste(parameters[2])
-        local channel = parameters[3] or CHAT_MSG_SAY
+        local channel = parameters[3] and strupper(parameters[3]) or CHAT_TYPE_SAY
 
         if not text then
             PasteNG:Print(L["Saved paste not found"])
             return
         end
 
-        if channel == BN_WHISPER or channel == CHAT_MSG_WHISPER_INFORM then
+        if channel == CHAT_TYPE_BN_WHISPER or channel == CHAT_TYPE_WHISPER then
             PasteNG:Print(L["You cannot send using whisper this way - please use the dialog instead"])
             return
         end

@@ -1,3 +1,6 @@
+# 12.0.7-20260803-1
+* Fix chat messages failing to send (e.g. "bad argument #2 to '?'") on non-English clients by using the actual chat type keywords (SAY, GUILD, WHISPER, etc.) instead of localized display labels when sending messages.
+
 # 12.0.7-20260723-1
 * Add a "Purge deleted pastes" option to the Load menu to permanently remove all deleted pastes.
 
