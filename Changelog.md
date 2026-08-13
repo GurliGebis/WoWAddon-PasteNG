@@ -1,3 +1,6 @@
+# 12.1.0-20260813-1
+* Fix presence announcements to skip followe dungeons and groups without at least 2 people.
+
 # 12.1.0-20260812-1
 * Updated TOC to match 12.1.0
 

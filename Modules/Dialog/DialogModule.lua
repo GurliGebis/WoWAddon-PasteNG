@@ -96,13 +96,20 @@ do
 
         local target
 
-        if not IsInGroup() or GetNumGroupMembers() == 0 then
+        -- Sometimes, when joining an instance, AnnouncePresence is called before the party is fully formed.
+        -- To prevent issues with "You aren't in a party", we make sure we are at least 2 members of the group.
+        if not IsInGroup() or GetNumGroupMembers() < 2 then
             return
         end
 
         -- Don't send announcements when inside scenarios, since we often have NPCs on our team, which can result in "You aren't in a party" message.
         local instanceType = select(2, GetInstanceInfo())
         if instanceType == "scenario" then
+            return
+        end
+
+        -- Same goes for follower dungeons, which also have NPCs as party members.
+        if C_LFGInfo.IsInLFGFollowerDungeon and C_LFGInfo.IsInLFGFollowerDungeon() then
             return
         end
 
