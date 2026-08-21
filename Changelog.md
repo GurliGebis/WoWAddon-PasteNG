@@ -1,3 +1,6 @@
+# 12.1.0-20260821-1
+* Better handling of presence announcements, to handle LFG/LFR instances.
+
 # 12.1.0-20260819-1
 * Updated TOC for Mists classic.
 
