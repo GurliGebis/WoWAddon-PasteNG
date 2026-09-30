@@ -1,3 +1,6 @@
+# 12.1.0-20260930-1
+* Added TOC support for World of Warcraft: Forever (Beta).
+
 # 12.1.0-20260821-1
 * Better handling of presence announcements, to handle LFG/LFR instances.
 

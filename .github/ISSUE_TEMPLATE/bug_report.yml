@@ -19,6 +19,7 @@ body:
         - Retail
         - Classic Era
         - MoP Classic
+        - Forever Beta
     validations:
       required: true
 
