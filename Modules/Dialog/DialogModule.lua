@@ -278,13 +278,15 @@ do
         end
     end
 
-    function DialogModule:RefreshPasteCloseButtons()
-        local function SetButtonStatus(enabled)
-            DialogModule.PasteButton:SetEnabled(enabled)
-            DialogModule.PasteCloseButton:SetEnabled(enabled)
+    local function SetPasteButtonStatus(enabled)
+        DialogModule.PasteButton:SetEnabled(enabled)
+        DialogModule.PasteCloseButton:SetEnabled(enabled)
 
-            isPastedAllowed = enabled
-        end
+        isPastedAllowed = enabled
+    end
+
+    function DialogModule:RefreshPasteCloseButtons()
+        local SetButtonStatus = SetPasteButtonStatus
 
         local text = DialogModule.TextBox:GetText()
 
