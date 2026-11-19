@@ -61,6 +61,17 @@ do
         return name
     end
 
+    -- Case-insensitive ordering, with the exact name as a tiebreaker so it is a strict weak ordering.
+    local function CompareNames(a, b)
+        local lowerA, lowerB = a:lower(), b:lower()
+
+        if lowerA == lowerB then
+            return a < b
+        end
+
+        return lowerA < lowerB
+    end
+
     function DBModule:OnInitialize()
         self.AceDB = LibStub("AceDB-3.0"):New("PasteNGDB", defaultOptions, true)
 
@@ -116,7 +127,7 @@ do
             result[#result+1] = k
         end
 
-        table.sort(result)
+        table.sort(result, CompareNames)
 
         return result
     end
@@ -173,7 +184,7 @@ do
             result[#result+1] = k
         end
 
-        table.sort(result)
+        table.sort(result, CompareNames)
 
         return result
     end
