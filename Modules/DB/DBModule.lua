@@ -143,10 +143,6 @@ do
         self:GetProfile().savedPastes[name] = encoded
     end
 
-    function DBModule:DeletePaste(name)
-        self:GetProfile().savedPastes[name] = nil
-    end
-
     function DBModule:SoftDeletePaste(name)
         local profile = self:GetProfile()
         local encoded = profile.savedPastes[name]

@@ -1146,7 +1146,7 @@ StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     button1 = "Yes",
     button2 = "No",
     OnAccept = function(self, data)
-        local deletedName = DBModule:SoftDeletePaste(data)
+        DBModule:SoftDeletePaste(data)
 
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshExportButton()
@@ -1331,22 +1331,6 @@ StaticPopupDialogs["PASTENG_IMPORT"] = {
         else
             getglobal(self:GetParent():GetName() .. "Button1"):Disable()
         end
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3,
-}
-
-StaticPopupDialogs["PASTENG_IMPORT_CONFIRM"] = {
-    text = L["This will replace the current text. Continue?"],
-    button1 = ACCEPT,
-    button2 = CANCEL,
-    OnAccept = function(self, data)
-        -- Clear text and show import instructions
-        DialogModule.TextBox:SetText("")
-        DialogModule.TextBox:SetFocus()
-        PasteNG:Print(L["Paste your export data into the text box, then click Import again to process it."])
     end,
     timeout = 0,
     whileDead = true,
