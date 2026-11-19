@@ -1059,7 +1059,7 @@ function DialogModule:OnEnable()
     C_Timer.After(2, function() self:AnnouncePresence() end)
 end
 
-function PrintUsage()
+local function PrintUsage()
     PasteNG:Print(L["PasteNG Usage:"])
     PasteNG:Print(L["/pasteng show - Show the pasteng dialog"])
     PasteNG:Print(L["/pasteng config - Open the configuration"])
