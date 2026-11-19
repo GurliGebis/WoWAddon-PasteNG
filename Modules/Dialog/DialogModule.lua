@@ -74,11 +74,16 @@ local function GetPartyMembers()
     return result
 end
 
+-- Records which saved (or deleted) paste is loaded, and locks the editor for deleted pastes.
+function DialogModule:SetCurrentPaste(name, isDeleted)
+    self.CurrentPasteName = name
+    self.CurrentPasteIsDeleted = isDeleted
+    self.TextBox.editBox:SetEnabled(not isDeleted)
+end
+
 local function DoPasteSave(name, data)
     DBModule:SavePaste(name, data)
-    DialogModule.CurrentPasteName = name
-    DialogModule.CurrentPasteIsDeleted = false
-    DialogModule.TextBox.editBox:SetEnabled(true)
+    DialogModule:SetCurrentPaste(name, false)
     DialogModule:UpdateTitle()
     DialogModule:RefreshLoadDeleteButtons()
     DialogModule:RefreshExportButton()
@@ -482,14 +487,7 @@ do
 
             if text then
                 DialogModule.TextBox:SetText(text)
-                DialogModule.CurrentPasteName = name
-                DialogModule.CurrentPasteIsDeleted = isDeleted
-
-                if isDeleted then
-                    DialogModule.TextBox.editBox:SetEnabled(false)
-                else
-                    DialogModule.TextBox.editBox:SetEnabled(true)
-                end
+                DialogModule:SetCurrentPaste(name, isDeleted)
 
                 DialogModule:UpdateFooter()
                 DialogModule:UpdateTitle()
@@ -570,9 +568,7 @@ do
                 return
             end
 
-            DialogModule.CurrentPasteName = newName
-            DialogModule.CurrentPasteIsDeleted = false
-            DialogModule.TextBox.editBox:SetEnabled(true)
+            DialogModule:SetCurrentPaste(newName, false)
             DialogModule:UpdateTitle()
             DialogModule:UpdateFooter()
             DialogModule:RefreshLoadDeleteButtons()
@@ -596,9 +592,7 @@ do
 
     function DialogModule:DoClear()
         DialogModule.TextBox:SetText("")
-        DialogModule.CurrentPasteName = nil
-        DialogModule.CurrentPasteIsDeleted = false
-        DialogModule.TextBox.editBox:SetEnabled(true)
+        DialogModule:SetCurrentPaste(nil, false)
         DialogModule:UpdateFooter()
         DialogModule:UpdateTitle()
         DialogModule:RefreshLoadDeleteButtons()
@@ -1270,9 +1264,7 @@ StaticPopupDialogs["PASTENG_SHARE_CONFIRM"] = {
     OnAccept = function(self, data)
         -- Show the dialog and set the text box to the received paste.
         DialogModule:ShowDialog()
-        DialogModule.CurrentPasteName = nil
-        DialogModule.CurrentPasteIsDeleted = false
-        DialogModule.TextBox.editBox:SetEnabled(true)
+        DialogModule:SetCurrentPaste(nil, false)
         DialogModule.TextBox:SetText(data)
         DialogModule:UpdateFooter()
 
