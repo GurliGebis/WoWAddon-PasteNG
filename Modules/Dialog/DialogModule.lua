@@ -335,9 +335,14 @@ do
         cmd = strupper(cmd)
 
         -- Ensure hash_SlashCmdList is up to date (lazily populated by Blizzard)
-        ChatFrameUtil.ImportAllListsToHash()
+        -- ChatFrameUtil only exists on newer clients; older ones use the global function.
+        local importAllListsToHash = (ChatFrameUtil and ChatFrameUtil.ImportAllListsToHash) or ChatFrame_ImportAllListsToHash
 
-        local handler = hash_SlashCmdList[cmd]
+        if importAllListsToHash then
+            importAllListsToHash()
+        end
+
+        local handler = hash_SlashCmdList and hash_SlashCmdList[cmd]
         if handler then
             handler(strtrim(args))
         end
