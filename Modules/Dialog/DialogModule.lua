@@ -1135,6 +1135,21 @@ function DialogModule:HandleChatCommand(message)
     end
 end
 
+-- Shared handlers for the popups that have an edit box and require some text before Accept is enabled.
+local function PopupEditBoxOnEnterPressed(self)
+    _G[self:GetParent():GetName() .. "Button1"]:Click()
+end
+
+local function PopupEditBoxOnTextChanged(self)
+    local button = _G[self:GetParent():GetName() .. "Button1"]
+
+    if #self:GetText() > 0 then
+        button:Enable()
+    else
+        button:Disable()
+    end
+end
+
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     text = "",
     button1 = "Yes",
@@ -1197,19 +1212,8 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
             DoPasteSave(pasteName, data)
         end
     end,
-    EditBoxOnEnterPressed = function(self)
-        getglobal(self:GetParent():GetName() .. "Button1"):Click()
-    end,
-	EditBoxOnTextChanged = function(self)
-		local editBox = getglobal(self:GetParent():GetName() .. "EditBox");
-		local text = editBox:GetText()
-
-        if #text > 0 then
-            getglobal(self:GetParent():GetName() .. "Button1"):Enable();
-        else
-            getglobal(self:GetParent():GetName() .. "Button1"):Disable();
-        end
-	end,
+    EditBoxOnEnterPressed = PopupEditBoxOnEnterPressed,
+    EditBoxOnTextChanged = PopupEditBoxOnTextChanged,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
@@ -1311,19 +1315,8 @@ StaticPopupDialogs["PASTENG_IMPORT"] = {
             PasteNG:Print(L["Failed to import pastes:"] .. " " .. (result or L["Unknown error"]))
         end
     end,
-    EditBoxOnEnterPressed = function(self)
-        getglobal(self:GetParent():GetName() .. "Button1"):Click()
-    end,
-    EditBoxOnTextChanged = function(self)
-        local editBox = getglobal(self:GetParent():GetName() .. "EditBox")
-        local text = editBox:GetText()
-
-        if #text > 0 then
-            getglobal(self:GetParent():GetName() .. "Button1"):Enable()
-        else
-            getglobal(self:GetParent():GetName() .. "Button1"):Disable()
-        end
-    end,
+    EditBoxOnEnterPressed = PopupEditBoxOnEnterPressed,
+    EditBoxOnTextChanged = PopupEditBoxOnTextChanged,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,

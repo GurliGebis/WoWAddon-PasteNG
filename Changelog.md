@@ -4,6 +4,7 @@
 * Saved and deleted paste names are now sorted case-insensitively.
 * Removed unused code (import confirm popup, DeletePaste, unused local).
 * Centralized current-paste state handling.
+* Shared the edit box handlers between the save and import popups.
 
 # 12.1.5-20261014-1
 * Updated Retail TOC to match 12.1.5
