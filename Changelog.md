@@ -1,3 +1,12 @@
+# 12.1.5-20261119-1
+* Made the usage printer a local function instead of a global.
+* Avoided creating a closure on every paste button refresh.
+* Saved and deleted paste names are now sorted case-insensitively.
+* Removed unused code (import confirm popup, DeletePaste, unused local).
+* Centralized current-paste state handling.
+* Shared the edit box handlers between the save and import popups.
+* Fixed an error running slash lines on clients without ChatFrameUtil.
+
 # 12.1.5-20261014-1
 * Updated Retail TOC to match 12.1.5
 

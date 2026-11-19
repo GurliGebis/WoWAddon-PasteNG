@@ -74,11 +74,16 @@ local function GetPartyMembers()
     return result
 end
 
+-- Records which saved (or deleted) paste is loaded, and locks the editor for deleted pastes.
+function DialogModule:SetCurrentPaste(name, isDeleted)
+    self.CurrentPasteName = name
+    self.CurrentPasteIsDeleted = isDeleted
+    self.TextBox.editBox:SetEnabled(not isDeleted)
+end
+
 local function DoPasteSave(name, data)
     DBModule:SavePaste(name, data)
-    DialogModule.CurrentPasteName = name
-    DialogModule.CurrentPasteIsDeleted = false
-    DialogModule.TextBox.editBox:SetEnabled(true)
+    DialogModule:SetCurrentPaste(name, false)
     DialogModule:UpdateTitle()
     DialogModule:RefreshLoadDeleteButtons()
     DialogModule:RefreshExportButton()
@@ -278,13 +283,15 @@ do
         end
     end
 
-    function DialogModule:RefreshPasteCloseButtons()
-        local function SetButtonStatus(enabled)
-            DialogModule.PasteButton:SetEnabled(enabled)
-            DialogModule.PasteCloseButton:SetEnabled(enabled)
+    local function SetPasteButtonStatus(enabled)
+        DialogModule.PasteButton:SetEnabled(enabled)
+        DialogModule.PasteCloseButton:SetEnabled(enabled)
 
-            isPastedAllowed = enabled
-        end
+        isPastedAllowed = enabled
+    end
+
+    function DialogModule:RefreshPasteCloseButtons()
+        local SetButtonStatus = SetPasteButtonStatus
 
         local text = DialogModule.TextBox:GetText()
 
@@ -328,9 +335,14 @@ do
         cmd = strupper(cmd)
 
         -- Ensure hash_SlashCmdList is up to date (lazily populated by Blizzard)
-        ChatFrameUtil.ImportAllListsToHash()
+        -- ChatFrameUtil only exists on newer clients; older ones use the global function.
+        local importAllListsToHash = (ChatFrameUtil and ChatFrameUtil.ImportAllListsToHash) or ChatFrame_ImportAllListsToHash
 
-        local handler = hash_SlashCmdList[cmd]
+        if importAllListsToHash then
+            importAllListsToHash()
+        end
+
+        local handler = hash_SlashCmdList and hash_SlashCmdList[cmd]
         if handler then
             handler(strtrim(args))
         end
@@ -480,14 +492,7 @@ do
 
             if text then
                 DialogModule.TextBox:SetText(text)
-                DialogModule.CurrentPasteName = name
-                DialogModule.CurrentPasteIsDeleted = isDeleted
-
-                if isDeleted then
-                    DialogModule.TextBox.editBox:SetEnabled(false)
-                else
-                    DialogModule.TextBox.editBox:SetEnabled(true)
-                end
+                DialogModule:SetCurrentPaste(name, isDeleted)
 
                 DialogModule:UpdateFooter()
                 DialogModule:UpdateTitle()
@@ -568,9 +573,7 @@ do
                 return
             end
 
-            DialogModule.CurrentPasteName = newName
-            DialogModule.CurrentPasteIsDeleted = false
-            DialogModule.TextBox.editBox:SetEnabled(true)
+            DialogModule:SetCurrentPaste(newName, false)
             DialogModule:UpdateTitle()
             DialogModule:UpdateFooter()
             DialogModule:RefreshLoadDeleteButtons()
@@ -594,9 +597,7 @@ do
 
     function DialogModule:DoClear()
         DialogModule.TextBox:SetText("")
-        DialogModule.CurrentPasteName = nil
-        DialogModule.CurrentPasteIsDeleted = false
-        DialogModule.TextBox.editBox:SetEnabled(true)
+        DialogModule:SetCurrentPaste(nil, false)
         DialogModule:UpdateFooter()
         DialogModule:UpdateTitle()
         DialogModule:RefreshLoadDeleteButtons()
@@ -1059,7 +1060,7 @@ function DialogModule:OnEnable()
     C_Timer.After(2, function() self:AnnouncePresence() end)
 end
 
-function PrintUsage()
+local function PrintUsage()
     PasteNG:Print(L["PasteNG Usage:"])
     PasteNG:Print(L["/pasteng show - Show the pasteng dialog"])
     PasteNG:Print(L["/pasteng config - Open the configuration"])
@@ -1139,12 +1140,27 @@ function DialogModule:HandleChatCommand(message)
     end
 end
 
+-- Shared handlers for the popups that have an edit box and require some text before Accept is enabled.
+local function PopupEditBoxOnEnterPressed(self)
+    _G[self:GetParent():GetName() .. "Button1"]:Click()
+end
+
+local function PopupEditBoxOnTextChanged(self)
+    local button = _G[self:GetParent():GetName() .. "Button1"]
+
+    if #self:GetText() > 0 then
+        button:Enable()
+    else
+        button:Disable()
+    end
+end
+
 StaticPopupDialogs["PASTENG_CONFIRM_DELETE"] = {
     text = "",
     button1 = "Yes",
     button2 = "No",
     OnAccept = function(self, data)
-        local deletedName = DBModule:SoftDeletePaste(data)
+        DBModule:SoftDeletePaste(data)
 
         DialogModule:RefreshLoadDeleteButtons()
         DialogModule:RefreshExportButton()
@@ -1201,19 +1217,8 @@ StaticPopupDialogs["PASTENG_SAVE"] = {
             DoPasteSave(pasteName, data)
         end
     end,
-    EditBoxOnEnterPressed = function(self)
-        getglobal(self:GetParent():GetName() .. "Button1"):Click()
-    end,
-	EditBoxOnTextChanged = function(self)
-		local editBox = getglobal(self:GetParent():GetName() .. "EditBox");
-		local text = editBox:GetText()
-
-        if #text > 0 then
-            getglobal(self:GetParent():GetName() .. "Button1"):Enable();
-        else
-            getglobal(self:GetParent():GetName() .. "Button1"):Disable();
-        end
-	end,
+    EditBoxOnEnterPressed = PopupEditBoxOnEnterPressed,
+    EditBoxOnTextChanged = PopupEditBoxOnTextChanged,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
@@ -1268,9 +1273,7 @@ StaticPopupDialogs["PASTENG_SHARE_CONFIRM"] = {
     OnAccept = function(self, data)
         -- Show the dialog and set the text box to the received paste.
         DialogModule:ShowDialog()
-        DialogModule.CurrentPasteName = nil
-        DialogModule.CurrentPasteIsDeleted = false
-        DialogModule.TextBox.editBox:SetEnabled(true)
+        DialogModule:SetCurrentPaste(nil, false)
         DialogModule.TextBox:SetText(data)
         DialogModule:UpdateFooter()
 
@@ -1317,35 +1320,8 @@ StaticPopupDialogs["PASTENG_IMPORT"] = {
             PasteNG:Print(L["Failed to import pastes:"] .. " " .. (result or L["Unknown error"]))
         end
     end,
-    EditBoxOnEnterPressed = function(self)
-        getglobal(self:GetParent():GetName() .. "Button1"):Click()
-    end,
-    EditBoxOnTextChanged = function(self)
-        local editBox = getglobal(self:GetParent():GetName() .. "EditBox")
-        local text = editBox:GetText()
-
-        if #text > 0 then
-            getglobal(self:GetParent():GetName() .. "Button1"):Enable()
-        else
-            getglobal(self:GetParent():GetName() .. "Button1"):Disable()
-        end
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3,
-}
-
-StaticPopupDialogs["PASTENG_IMPORT_CONFIRM"] = {
-    text = L["This will replace the current text. Continue?"],
-    button1 = ACCEPT,
-    button2 = CANCEL,
-    OnAccept = function(self, data)
-        -- Clear text and show import instructions
-        DialogModule.TextBox:SetText("")
-        DialogModule.TextBox:SetFocus()
-        PasteNG:Print(L["Paste your export data into the text box, then click Import again to process it."])
-    end,
+    EditBoxOnEnterPressed = PopupEditBoxOnEnterPressed,
+    EditBoxOnTextChanged = PopupEditBoxOnTextChanged,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
