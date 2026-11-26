@@ -269,8 +269,22 @@ do
         -- Import each paste
         for name, text in pairs(pastes) do
             if type(name) == "string" and type(text) == "string" and name ~= "" then
-                profile.savedPastes[name] = base64_enc(text)
-                importCount = importCount + 1
+                local encoded = base64_enc(text)
+                local existing = profile.savedPastes[name]
+
+                -- Never overwrite an existing paste: identical ones are skipped,
+                -- different ones are imported under a unique name.
+                if existing == nil then
+                    profile.savedPastes[name] = encoded
+                    importCount = importCount + 1
+                elseif existing ~= encoded then
+                    local uniqueName = GenerateUniqueName(name, function(n)
+                        return profile.savedPastes[n] ~= nil
+                    end)
+
+                    profile.savedPastes[uniqueName] = encoded
+                    importCount = importCount + 1
+                end
             end
         end
 
