@@ -1,5 +1,6 @@
 # 12.1.5-20261126-1
 * Battle.net friend is now looked up once per paste, so the not-found popup shows once.
+* Added an explicit anchor to the addon compartment tooltip.
 
 # 12.1.5-20261119-1
 * Made the usage printer a local function instead of a global.

@@ -26,7 +26,7 @@ function PasteNG_OnAddonCompartmentClick(_, button)
 end
 
 function PasteNG_OnAddonCompartmentEnter(_, frame)
-    GameTooltip:SetOwner(frame)
+    GameTooltip:SetOwner(frame, "ANCHOR_LEFT")
 
     MinimapModule:CreateTooltip(GameTooltip)
 
