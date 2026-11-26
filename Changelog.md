@@ -2,6 +2,7 @@
 * Battle.net friend is now looked up once per paste, so the not-found popup shows once.
 * Added an explicit anchor to the addon compartment tooltip.
 * Options panel now updates when the minimap icon is toggled with /pasteng minimap.
+* Group roster updates are coalesced before announcing presence, reducing addon traffic.
 
 # 12.1.5-20261119-1
 * Made the usage printer a local function instead of a global.

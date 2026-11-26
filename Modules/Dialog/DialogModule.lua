@@ -1015,11 +1015,24 @@ do
         end
     end
 
-    function DialogModule:OnGroupRosterUpdate()
-        wipe(addonPresence)
+    local rosterUpdatePending = false
 
-        self:AnnouncePresence()
+    function DialogModule:OnGroupRosterUpdate()
         self:RefreshShareButton()
+
+        -- GROUP_ROSTER_UPDATE fires in bursts, so coalesce them into a single announcement.
+        if rosterUpdatePending then
+            return
+        end
+
+        rosterUpdatePending = true
+
+        C_Timer.After(1, function()
+            rosterUpdatePending = false
+
+            wipe(addonPresence)
+            self:AnnouncePresence()
+        end)
     end
 end
 
