@@ -318,11 +318,12 @@ do
     end
 
     function DialogModule:RefreshShareButton()
-        local numberOfMembers = GetPartyMembers()
+        -- Avoid building the member list (and many unit API calls) just to know if anyone else is in the group.
+        local hasOtherMembers = IsInGroup() and GetNumGroupMembers() > 1
 
         local sharingEnabled = DBModule:GetValue("enable_sharing")
 
-        if #numberOfMembers > 0 and isPastedAllowed and sharingEnabled then
+        if hasOtherMembers and isPastedAllowed and sharingEnabled then
             DialogModule.ShareButton:SetEnabled(true)
         else
             DialogModule.ShareButton:SetEnabled(false)
