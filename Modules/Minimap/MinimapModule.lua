@@ -43,6 +43,13 @@ do
         if MinimapIcon then
             MinimapIcon:Refresh(addonName)
         end
+
+        -- Keep an open options panel in sync (e.g. after /pasteng minimap).
+        local AceConfigRegistry = LibStub("AceConfigRegistry-3.0", true)
+
+        if AceConfigRegistry then
+            AceConfigRegistry:NotifyChange(addonName)
+        end
     end
 
     local leftClickText = "|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"]
