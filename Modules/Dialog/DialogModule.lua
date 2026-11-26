@@ -357,13 +357,23 @@ do
     end
 
     function DialogModule:SendPaste(text, target)
+        -- Battle.net account lookup is done once per paste, not once per line.
+        local bnetAccountID
+        local bnetLookupDone = false
+
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
             if chatType == CHAT_TYPE_BN_WHISPER then
-                local bnetAccountID = BNet_GetBNetIDAccount(target)
+                if not bnetLookupDone then
+                    bnetLookupDone = true
+                    bnetAccountID = BNet_GetBNetIDAccount(target)
+
+                    if not bnetAccountID then
+                        StaticPopup_Show("PASTENG_BATTLE_NET_FRIEND_NOT_FOUND")
+                    end
+                end
 
                 if not bnetAccountID then
-                    StaticPopup_Show("PASTENG_BATTLE_NET_FRIEND_NOT_FOUND")
                     return
                 end
 
