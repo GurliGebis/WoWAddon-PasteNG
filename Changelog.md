@@ -4,6 +4,7 @@
 * Options panel now updates when the minimap icon is toggled with /pasteng minimap.
 * Group roster updates are coalesced before announcing presence, reducing addon traffic.
 * Importing no longer overwrites existing pastes; differing ones get a unique name.
+* Fixed minimap button registration when the data broker object already exists.
 
 # 12.1.5-20261119-1
 * Made the usage printer a local function instead of a global.
