@@ -318,11 +318,12 @@ do
     end
 
     function DialogModule:RefreshShareButton()
-        local numberOfMembers = GetPartyMembers()
+        -- Avoid building the member list (and many unit API calls) just to know if anyone else is in the group.
+        local hasOtherMembers = IsInGroup() and GetNumGroupMembers() > 1
 
         local sharingEnabled = DBModule:GetValue("enable_sharing")
 
-        if #numberOfMembers > 0 and isPastedAllowed and sharingEnabled then
+        if hasOtherMembers and isPastedAllowed and sharingEnabled then
             DialogModule.ShareButton:SetEnabled(true)
         else
             DialogModule.ShareButton:SetEnabled(false)
@@ -357,13 +358,23 @@ do
     end
 
     function DialogModule:SendPaste(text, target)
+        -- Battle.net account lookup is done once per paste, not once per line.
+        local bnetAccountID
+        local bnetLookupDone = false
+
         -- Wrapper function to handle different types of chat messages
         local function SendChatMessageWrapper(message, chatType, target)
             if chatType == CHAT_TYPE_BN_WHISPER then
-                local bnetAccountID = BNet_GetBNetIDAccount(target)
+                if not bnetLookupDone then
+                    bnetLookupDone = true
+                    bnetAccountID = BNet_GetBNetIDAccount(target)
+
+                    if not bnetAccountID then
+                        StaticPopup_Show("PASTENG_BATTLE_NET_FRIEND_NOT_FOUND")
+                    end
+                end
 
                 if not bnetAccountID then
-                    StaticPopup_Show("PASTENG_BATTLE_NET_FRIEND_NOT_FOUND")
                     return
                 end
 
@@ -1005,11 +1016,24 @@ do
         end
     end
 
-    function DialogModule:OnGroupRosterUpdate()
-        wipe(addonPresence)
+    local rosterUpdatePending = false
 
-        self:AnnouncePresence()
+    function DialogModule:OnGroupRosterUpdate()
         self:RefreshShareButton()
+
+        -- GROUP_ROSTER_UPDATE fires in bursts, so coalesce them into a single announcement.
+        if rosterUpdatePending then
+            return
+        end
+
+        rosterUpdatePending = true
+
+        C_Timer.After(1, function()
+            rosterUpdatePending = false
+
+            wipe(addonPresence)
+            self:AnnouncePresence()
+        end)
     end
 end
 

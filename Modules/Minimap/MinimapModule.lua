@@ -43,6 +43,13 @@ do
         if MinimapIcon then
             MinimapIcon:Refresh(addonName)
         end
+
+        -- Keep an open options panel in sync (e.g. after /pasteng minimap).
+        local AceConfigRegistry = LibStub("AceConfigRegistry-3.0", true)
+
+        if AceConfigRegistry then
+            AceConfigRegistry:NotifyChange(addonName)
+        end
     end
 
     local leftClickText = "|cffffff00" .. L["Left Click"] .. "|r " .. L["to show window"]
@@ -76,7 +83,8 @@ do
         end
 
         -- Create the minimap button / data broker object.
-        local minimapButton = LibDataBroker:NewDataObject(addonName, {
+        -- NewDataObject returns nil if the object already exists, so reuse it in that case.
+        local minimapButton = LibDataBroker:GetDataObjectByName(addonName) or LibDataBroker:NewDataObject(addonName, {
             type = "launcher",
             text = "PasteNG",
             icon = "Interface\\Icons\\inv_scroll_08",
